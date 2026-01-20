@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Simple de Sentry</title>
+    <script src="https://browser.sentry-cdn.com/8.31.0/bundle.tracing.replay.min.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f3f4f6;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #3b82f6;
+            padding-bottom: 10px;
+        }
+        .status-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status-item {
+            margin: 10px 0;
+            padding: 10px;
+            border-left: 4px solid #ccc;
+        }
+        .status-item.success {
+            border-left-color: #22c55e;
+            background-color: #f0fdf4;
+        }
+        .status-item.error {
+            border-left-color: #ef4444;
+            background-color: #fef2f2;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .logs {
+            background: #1f2937;
+            color: #4ade80;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: monospace;
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 20px 0;
+        }
+        .instructions {
+            background: #fef3c7;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #f59e0b;
+        }
+        .instructions ol {
+            margin-left: 20px;
+        }
+        .instructions li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Simple de Sentry (Sense Next.js)</h1>
+
+    <div id="status">
+        <div class="status-box">
+            <h2>Estat de Configuración</h2>
+            <div id="dsn-status" class="status-item">Carregant...</div>
+            <div id="env-status" class="status-item">Carregant...</div>
+        </div>
+    </div>
+
+    <div id="logs" class="logs"></div>
+
+    <div class="status-box">
+        <h2>Tests d'Errors</h2>
+        <button id="btn1" disabled>1. Error Manual</button>
+        <button id="btn2" disabled>2. Error Asíncrono</button>
+        <button id="btn3" disabled>3. Error amb Context</button>
+        <button id="btn4" disabled>4. Missatge</button>
+    </div>
+
+    <div class="instructions">
+        <h2>Com Provar</h2>
+        <ol>
+            <li>Revisa "Estat de Configuración" - ha de ser tot ✅</li>
+            <li>Fes clic en un dels botons de test (1-4)</li>
+            <li>Mira els logs de dalt (haurien de dir "Capturat a Sentry")</li>
+            <li>Ves al dashboard de Sentry: <a href="https://sentry.io" target="_blank" style="color: #3b82f6;">https://sentry.io</a></li>
+            <li>Selecciona l'organització: <strong>digitaistudios</strong></li>
+            <li>Selecciona el projecte: <strong>crims-frontend</strong></li>
+            <li>Hauries de veure l'error que has generat</li>
+        </ol>
+    </div>
+
+    <script>
+        // Configuración de Sentry (DES DE .ENV.LOCAL)
+        // COPIA EL TEU DSN DESDE .ENV.LOCAL I PEGA'L AQUÍ:
+        const YOUR_SENTRY_DSN = "https://8355af5aed6725739abe3e6793198f2c@o4510557342400512.ingest.de.sentry.io/4510744306909264";
+
+        let dsnConfigured = false;
+        let envConfigured = false;
+
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logsDiv = document.getElementById('logs');
+            logsDiv.innerHTML += `[${timestamp}] ${message}<br>`;
+        }
+
+        function checkConfig() {
+            log('=== CHECKING CONFIGURATION ===');
+
+            // Check DSN
+            if (YOUR_SENTRY_DSN && YOUR_SENTRY_DSN.includes('sentry.io')) {
+                log('✅ DSN Configurat: ' + YOUR_SENTRY_DSN.substring(0, 30) + '...');
+                dsnConfigured = true;
+            } else {
+                log('❌ DSN NO configurat o invàlid');
+                dsnConfigured = false;
+            }
+
+            // Check Environment (hardcoded para desarrollo)
+            envConfigured = true;
+            log('✅ Environment: development');
+
+            // Actualizar UI
+            const dsnStatus = document.getElementById('dsn-status');
+            const envStatus = document.getElementById('env-status');
+            const buttons = document.querySelectorAll('button');
+
+            if (dsnConfigured && envConfigured) {
+                dsnStatus.className = 'status-item success';
+                dsnStatus.textContent = '✅ DSN Configurat';
+                envStatus.className = 'status-item success';
+                envStatus.textContent = '✅ Environment: development';
+                buttons.forEach(btn => btn.disabled = false);
+            } else {
+                dsnStatus.className = 'status-item error';
+                dsnStatus.textContent = '❌ DSN NO Configurat';
+                buttons.forEach(btn => btn.disabled = true);
+            }
+
+            log('=== END CHECKING ===');
+        }
+
+        // Inicialitzar Sentry
+        Sentry.init({
+            dsn: YOUR_SENTRY_DSN,
+            environment: 'development',
+            tracesSampleRate: 0.1,
+            replaysSessionSampleRate: 0.1,
+            replaysOnErrorSampleRate: 1.0,
+        });
+
+        // Test 1: Error Manual
+        document.getElementById('btn1').onclick = function() {
+            if (!dsnConfigured) {
+                alert('❌ DSN NO configurat!');
+                return;
+            }
+
+            log('Test 1: Error manual');
+            try {
+                throw new Error('Test Error 1: Error manual');
+            } catch (error) {
+                Sentry.captureException(error);
+                log('✅ Error 1: Capturat a Sentry');
+            }
+        };
+
+        // Test 2: Error Asíncrono
+        document.getElementById('btn2').onclick = function() {
+            if (!dsnConfigured) {
+                alert('❌ DSN NO configurat!');
+                return;
+            }
+
+            log('Test 2: Error asíncrono');
+            Promise.reject(new Error('Test Error 2: Promise reject'))
+                .catch(error => {
+                    Sentry.captureException(error);
+                    log('✅ Error 2: Capturat a Sentry');
+                });
+        };
+
+        // Test 3: Error amb Context
+        document.getElementById('btn3').onclick = function() {
+            if (!dsnConfigured) {
+                alert('❌ DSN NO configurat!');
+                return;
+            }
+
+            log('Test 3: Error amb context');
+
+            Sentry.setContext('test_context', {
+                test_type: 'manual_trigger',
+                user_action: 'click_test_button',
+            });
+
+            Sentry.setTag('test_type', 'manual_error');
+
+            const error = new Error('Test Error 3: Error amb context');
+            Sentry.captureException(error);
+            log('✅ Error 3: Capturat a Sentry');
+        };
+
+        // Test 4: Missatge
+        document.getElementById('btn4').onclick = function() {
+            if (!dsnConfigured) {
+                alert('❌ DSN NO configurat!');
+                return;
+            }
+
+            log('Test 4: Missatge');
+            Sentry.captureMessage('Test Message: Usuari ha fet alguna cosa', 'warning');
+            log('✅ Missatge 4: Capturat a Sentry');
+        };
+
+        // Check configuration on load
+        window.onload = checkConfig;
+    </script>
+</body>
+</html>
