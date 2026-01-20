@@ -20,11 +20,12 @@ Sentry.init({
 
   // Before Send (filtre errors)
   beforeSend(event, hint) {
-    // No enviar errors en development (opcional)
-    if (process.env.ENVIRONMENT === "development") {
-      console.error("Sentry Error (Server):", event);
-      return null;
-    }
+    // PERMITIR ENVIAR ERRORS EN DEVELOPMENT PER FER TESTS
+    // Comentat temporalment per verificar que funciona
+    // if (process.env.ENVIRONMENT === "development") {
+    //   console.error("Sentry Error (Server):", event);
+    //   return null;
+    // }
 
     return event;
   },

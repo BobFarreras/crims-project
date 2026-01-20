@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -102,6 +103,72 @@ func main() {
 			"version": "0.1.0-alpha",
 		}
 		web.RespondJSON(w, http.StatusOK, status)
+	})
+
+	// ===============================
+	// TESTS DE SENTRY (BACKEND)
+	// ===============================
+
+	// Test 1: Error manual amb captureException
+	r.Get("/api/test-sentry/error1", func(w http.ResponseWriter, r *http.Request) {
+		// Error manual
+		err := fmt.Errorf("Test Error 1: Error de Go manual")
+		sentry.CaptureException(err)
+		web.RespondJSON(w, http.StatusOK, map[string]string{
+			"message": "Error capturat! Mira Sentry Dashboard",
+			"dsn":     os.Getenv("SENTRY_DSN"),
+		})
+	})
+
+	// Test 2: Error amb context
+	r.Get("/api/test-sentry/error2", func(w http.ResponseWriter, r *http.Request) {
+		// Añadir contexto
+		sentry.ConfigureScope(func(scope *sentry.Scope) {
+			scope.SetContext("test_context", map[string]interface{}{
+				"test_type": "manual_trigger",
+				"endpoint":  "/api/test-sentry/error2",
+				"timestamp": time.Now().Unix(),
+			})
+
+			scope.SetTag("test_type", "manual_error")
+			scope.SetTag("backend", "go")
+		})
+
+		// Capturar error amb context
+		err := fmt.Errorf("Test Error 2: Error amb context")
+		sentry.CaptureException(err)
+
+		web.RespondJSON(w, http.StatusOK, map[string]string{
+			"message": "Error amb context capturat! Mira Sentry Dashboard",
+		})
+	})
+
+	// Test 3: Error amb nivell de severitat
+	r.Get("/api/test-sentry/error3", func(w http.ResponseWriter, r *http.Request) {
+		err := fmt.Errorf("Test Error 3: Error amb nivell de severitat")
+
+		sentry.WithScope(func(scope *sentry.Scope) {
+			scope.SetLevel(sentry.LevelError)
+			sentry.CaptureException(err)
+		})
+
+		web.RespondJSON(w, http.StatusOK, map[string]string{
+			"message": "Error amb nivell de severitat capturat! Mira Sentry Dashboard",
+		})
+	})
+
+	// Test 4: Panic (middleware hauria de capturar-ho)
+	r.Get("/api/test-sentry/panic", func(w http.ResponseWriter, r *http.Request) {
+		// Això hauria de ser capturat pel middleware de Sentry
+		panic("Test Error 4: Panic intentional")
+	})
+
+	// Test 5: Capturar missatge (no error)
+	r.Get("/api/test-sentry/message", func(w http.ResponseWriter, r *http.Request) {
+		sentry.CaptureMessage("Test Message: Alguna cosa ha passat")
+		web.RespondJSON(w, http.StatusOK, map[string]string{
+			"message": "Missatge capturat! Mira Sentry Dashboard",
+		})
 	})
 
 	port := "8080"

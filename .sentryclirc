@@ -4,7 +4,7 @@
 org = digitaistudios
 
 # Projecte de Sentry
-project = crims-project
+project = crims-frontend
 
 # DSN (sobreescriu per entorn)
 dsn = https://xxx@sentry.io/xxx

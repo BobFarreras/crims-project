@@ -12,10 +12,12 @@ Sentry.init({
 
   // Before Send (filtre errors)
   beforeSend(event, hint) {
-    if (process.env.NODE_ENV === "development") {
-      console.error("Sentry Error (Edge):", event);
-      return null;
-    }
+    // PERMITIR ENVIAR ERRORS EN DEVELOPMENT PER FER TESTS
+    // Comentat temporalment per verificar que funciona
+    // if (process.env.NODE_ENV === "development") {
+    //   console.error("Sentry Error (Edge):", event);
+    //   return null;
+    // }
 
     return event;
   },
