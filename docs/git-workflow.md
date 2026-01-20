@@ -5,13 +5,26 @@
 Aquest projecte utilitza **Git Flow** adaptat per a monorepos Next.js + Go.
 
 ```
-main              → Producció (sempre estable)
-└── develop       → Integració (pre-producció)
-    ├── feature/* → Noves funcionalitats
-    ├── release/* → Preparació de versions
-    ├── hotfix/*  → Correccions urgents
+main              → Producció (només versions estables)
+└── develop       → Integració (conté totes les features acabades)
+    ├── feature/* → Noves funcionalitats (desenvolupament)
+    ├── release/* → Preparació de versions (pre-producció)
+    ├── hotfix/*  → Correccions urgents (de producció)
     ├── chore/*   → Tasques tècniques
     └── docs/*    → Documentació
+```
+
+---
+
+## 🚨 REGLA D'OR: MAIN ÉS NOMÉS PER RELEASES
+
+⚠️ **IMPORTANT:** `main` conté **ÚNICAMENT** versions estables de producció.
+
+**NUNCA** fas merge directe de `feature/*` a `main`.
+
+**Flux CORRECTE:**
+```
+feature/* → develop → main (només quan hi ha release)
 ```
 
 ---
@@ -19,13 +32,14 @@ main              → Producció (sempre estable)
 ## 🌳 Branches Principals
 
 ### `main` 🔵
-- **Què és:** Codi en producció
+- **Què és:** Codi en producció (només versions estables)
 - **Estabilitat:** Sempre estable i desplegable
 - **Ús:** Referència final per a releases
 
 **Regles:**
 - ❌ NO es treballa directament aquí
-- ✔️ Només merges aprovats via Pull Request
+- ❌ NO es fa merge directe de `feature/*` a main
+- ✔️ Només merges aprovats via Pull Request des de `develop` o `release/*`
 - ✔️ Cada merge ha de tenir tag de versió (ex: `v1.0.0`)
 - ✔️ Protegit amb branch protection
 
@@ -45,15 +59,13 @@ git push origin v1.0.0
 - **Ús:** On es combinen totes les feature/* acabades
 
 **Regles:**
-- Les feature/* es mergegen aquí
+- Les `feature/*` es mergegen aquí
 - Ha de compilar i passar tests
-- Base per crear release/*
+- Base per crear `release/*`
+- Les `hotfix/*` es mergegen aquí (backport)
 
 **Comandes:**
 ```bash
-# Crear develop (només primer cop)
-git checkout -b develop
-
 # Actualitzar develop
 git checkout develop
 git pull origin develop
@@ -66,7 +78,7 @@ git pull origin develop
 ### `feature/*` 🟡
 - **Què és:** Desenvolupament d'una funcionalitat concreta
 - **Origen:** Es creen des de `develop`
-- **Destí:** Es mergegen a `develop`
+- **Destí:** Es mergegen a `develop` (NO a main)
 - **Vida:** S'esborren després del merge
 
 **Nomenclatura:**
@@ -89,7 +101,7 @@ git checkout develop
 git pull origin develop
 git checkout -b feature/lobby-roles
 
-# 2. Treballar i commitear
+# 2. Treballar i commitejar
 git add .
 git commit -m "feat: implementar selección de roles en el lobby"
 git push -u origin feature/lobby-roles
@@ -123,7 +135,7 @@ ci: cambios a CI/CD
 ### `release/*` 🟣
 - **Què és:** Preparació d'una versió per producció
 - **Origen:** Es creen des de `develop`
-- **Destí:** Es mergejan a `main` i `develop`
+- **Destí:** Es mergejen a `main` i `develop`
 - **Vida:** S'esborren després del merge
 
 **Nomenclatura:**
@@ -197,7 +209,7 @@ git push origin --delete release/1.0.0
 ```
 hotfix/descripcio-curta
 
-Exemples:
+Exemplos:
 hotfix/crash-on-login
 hotfix/security-jwt-expiry
 hotfix/data-loss-investigation
@@ -238,7 +250,7 @@ git push origin --delete hotfix/crash-on-login
 
 ---
 
-## 📦 Branches Opcionals
+## 📦 Branches Opcionals (segons projecte)
 
 ### `chore/*` 🧹
 - **Què és:** Tasques tècniques sense funcionalitat d'usuari
@@ -270,7 +282,7 @@ docs/api-documentation
 - **Origen:** `develop`
 - **Destí:** `develop`
 
-**Exemples:**
+**Exemplos:**
 ```
 test/unit-tests-auth
 test/e2e-game-flow
@@ -279,48 +291,30 @@ test-increase-coverage
 
 ---
 
-## 🏗️ Visual Flow Diagram
+## 🏗️ Estructura Típica Visual
 
 ```
-                     main (v1.0.0)
-                         │
-                         │ release/1.0.0
-                         │
-                      develop
-                        │  │
-        ┌───────────────┼──┴───────────────┐
-        │               │                  │
- feature/lobby  feature/board  feature/forensic
-        │               │                  │
-        └───────────────┼──────────────────┘
-                        │
-                        └─→ (merge a develop)
-```
-
-**Hotfix flow:**
-```
-      main (v1.0.0)  →  main (v1.0.1)
-          │                 ↑
-          │                 │
-      hotfix/crash ────────┘
-          │
-          └─→ (backport a develop)
+main (v1.0.0 - PRODUCCIÓN)
+└── develop (integració)
+    ├── feature/lobby-roles
+    ├── feature/investigation-board
+    ├── feature/forensic-tools
+    └── feature/auth-jwt
 ```
 
 ---
 
-## 🧭 Quan Usar Quina Branca?
+## 🧭 Quan Usar Quina Branca
 
 | Situació | Branca | Origen | Destí |
-|----------|--------|--------|-------|
+|----------|--------|--------|--------|
 | Nova funcionalitat (lobby, board, etc.) | `feature/*` | develop | develop |
 | Correcció de bug no urgent | `feature/fix-*` | develop | develop |
-| Preparar versió per producció | `release/X.Y.Z` | develop | main + develop |
-| Error crític en producció | `hotfix/*` | main | main + develop |
+| Correcció urgent en producció | `hotfix/*` | main | main + develop |
+| Preparar versió per producció | `release/*` | develop | main + develop |
 | Actualitzar dependències | `chore/*` | develop | develop |
-| Afegir tests | `test/*` | develop | develop |
 | Documentar | `docs/*` | develop | develop |
-| Refactoring | `chore/refactor-*` | develop | develop |
+| Afegir tests | `test/*` | develop | develop |
 
 ---
 
@@ -331,12 +325,11 @@ Este documento es la **fuente de verdad** para el workflow Git. Cuando un agente
 1. **Crear nueva funcionalidad:** Crear `feature/nombre-feature` desde develop
 2. **Arreglar bug urgente:** Crear `hotfix/descripcion` desde main
 3. **Preparar release:** Crear `release/X.Y.Z` desde develop
-4. **Comitear:** Usar prefijos (feat, fix, docs, etc.) en **CASTELLANO**
+4. **Comitejar:** Usar prefijos (feat, fix, docs, etc.) en **CASTELLANO**
 5. **Fusión:** Siempre vía Pull Request, nunca direct merge
+6. **⚠️ NUNCA hacer merge directo de `feature/*` a `main`**
 
-⚠️ **IMPORTANTE:** Antes de CUALQUIER operación que afecte producción, los agentes DEBEN seguir las [Medidas de Seguridad para Agentes AI](./agent-safety.md).
-
-**Comandos automáticos para agentes:**
+**Comanda automática para agentes:**
 ```bash
 # Crear feature nueva
 git checkout develop && git pull origin develop && git checkout -b feature/nombre-feature
@@ -344,7 +337,7 @@ git checkout develop && git pull origin develop && git checkout -b feature/nombr
 # Crear hotfix
 git checkout main && git pull origin main && git checkout -b hotfix/descripcion
 
-# Después de merge (aprobado)
+# Després de merge (aprobat)
 git checkout develop && git branch -d feature/nombre-feature && git push origin --delete feature/nombre-feature
 ```
 
@@ -363,12 +356,16 @@ git checkout develop && git branch -d feature/nombre-feature && git push origin 
   - Security checks
   - E2E tests
 - ✅ Require branches to be up to date before merging
+- ✅ Restrict who can push to main
 - ❌ Do not allow bypassing the above settings
 
 ### Protecció de `develop`:
 - ✅ Require pull request before merging
 - ✅ Require approvals: 1
 - ✅ Require status checks to pass
+- ✅ Require branches to be up to date before merging
+
+---
 
 ## 🤖 GitHub Actions - Seguridad Adicional
 
@@ -385,113 +382,163 @@ Los GitHub Actions **SOLO** se ejecutan en:
 
 ### Ventajas de esta Estrategia
 
-1. **Seguridad:**
-   - Los cambios solo se verifican cuando van a producción o release
-   - Evita que el CI/CD corra inútilmente en branches de desarrollo
+1. **Seguridad:** Los cambios solo se verifican cuando van a producción
+2. **Velocidad:** Puedes commitear en `develop` sin esperar el CI/CD
+3. **Previene Roturas:** Si el CI/CD falla, el PR no puede mergearse
 
-2. **Velocidad:**
-   - Los desarrolladores pueden commitear en `develop` sin esperar el CI/CD
-   - El CI/CD solo corre cuando realmente importa
+### ¿Debes Ejecutar Tests Localmente?
 
-3. **Previene Roturas:**
-   - Los tests solo se ejecutan cuando se va a hacer merge a `main` o `release`
-   - Si fallan, el PR no puede mergearse
+**SÍ, SIEMPRE:**
+- Antes de CUALQUIER commit
+- Sigue el checklist de abajo
+- Esto asegura que `develop` esté siempre en estado funcional
+- Cuando crees un `release/*` y el CI/CD falle, sabrás exactamente qué arreglar
 
-### ¿Cuándo se Ejecuta el CI/CD?
-
+### Flujo del CI/CD
 ```
 develop → release/1.0.0     → CI/CD ✅
 release/1.0.0 → main       → CI/CD ✅
 feature/* → develop         → CI/CD ❌ (local tests only)
 hotfix/* → main             → CI/CD ✅
-main (direct push)          → CI/CD ✅ (si bypassa branch protection)
 ```
 
 ---
 
-## 📌 Bones Pràctiques
+## ✅ Checklist Antes de Hacer Push
 
-### ✔️ SEMPRE:
-- Usar branch protection a main/develop
-- Fer Pull Requests, no direct merge
-- Reviews de codi abans del merge
-- Commits petits i descriptius
-- CI/CD ha de passar abans del merge
-- Esborrar branches després del merge
-- Tags a cada release a main
+Siempre ejecuta este checklist antes de cualquier push:
 
-### ❌ MAI:
-- Commitejar directament a main
-- Commit "fix typo", "update", etc. (més descriptiu)
-- Pujar secrets o .env files
-- Deixar branches antigues al remote
-- Push force a branches compartides
-- Ignorar warnings de linter
+### Paso 1: Verificación de Seguridad
+```bash
+# ¿Hay secretos en el commit?
+git diff --staged | grep -i "password\|secret\|api_key\|token"
+# Si devuelve algo → ABORTAR
+
+# ¿Hay archivos .env?
+git diff --staged --name-only | grep "\.env"
+# Si devuelve algo → ABORTAR
+```
+
+### Paso 2: Verificación de Tests
+```bash
+# Frontend
+cd frontend && pnpm test -- run
+# Si tests fallan → ABORTAR
+
+# Backend
+cd backend && go test ./...
+# Si tests fallan → ABORTAR
+```
+
+### Paso 3: Verificación de Lint
+```bash
+# Frontend
+cd frontend && pnpm lint
+# Si hay errores → ABORTAR
+
+# Backend (si hay linter)
+cd backend && go vet ./...
+# Si hay errores → ABORTAR
+```
+
+### Paso 4: Verificación de Build
+```bash
+# Frontend
+cd frontend && pnpm build
+# Si falla → ABORTAR
+
+# Backend
+cd backend && go build ./cmd/server
+# Si falla → ABORTAR
+```
+
+### Paso 5: Verificación de Archivos
+```bash
+# ¿Hay archivos incorrectos commiteados?
+git diff --staged --name-only | grep -E "node_modules|\.next|build|\.git|\.env"
+# Si devuelve algo → RESTORE y RESTART
+```
+
+### Paso 6: Verificación de Mensaje de Commit
+```bash
+# ¿El mensaje sigue las normas?
+# Formato: tipo: descripción (CASTELLANO)
+# Ejemplos correctos:
+✅ feat: implementar selección de roles en el lobby
+✅ fix: corregir fallo en login con caracteres especiales
+✅ docs: añadir guía de deployment
+
+# Ejemplos incorrectos:
+❌ fix typo
+❌ update
+❌ wip
+❌ test changes
+```
 
 ---
 
-## 📅 Exemple de Projecte Real
+## 📊 Flujo de Decisión para Agentes
 
-**Fase 1: Setup** (main: v0.1.0)
-```bash
-feature/setup-monorepo
-feature/configure-ci-cd
-feature/add-base-documentation
-→ Merge to develop
-→ Release v0.1.0 → main
 ```
-
-**Fase 2: MVP** (main: v1.0.0)
-```bash
-feature/lobby-roles
-feature/investigation-board
-feature/scene-exploration
-feature/auth-system
-feature/pwa-manifest
-→ Merge to develop
-→ Release v1.0.0 → main
-```
-
-**Fase 3: Post-MVP** (main: v1.1.0)
-```bash
-feature/forensic-tools
-feature/interrogation-system
-feature/timeline-editor
-feature/sentry-integration
-→ Merge to develop
-→ Release v1.1.0 → main
-```
-
-**Emergència:**
-```bash
-hotfix/login-crash (des de main)
-→ Merge a main → v1.0.1
-→ Backport a develop
+┌─────────────────────────────────────────┐
+│  Usuario solicita operación          │
+└──────────────┬──────────────────────┘
+               │
+               ▼
+       ┌───────────────┐
+       │ ¿Es documentación? │
+       └───────┬───────┘
+                 │
+         ┌───────────┴───────────┐
+         │ Sí              │ No
+         ▼                  ▼
+┌──────────────────┐   ┌──────────────────────┐
+│ Crear PR       │   │ Ejecutar Checklist   │
+│ a develop       │   └──────────┬───────────┘
+│ (push OK)      │                │
+└──────────────────┘                ▼
+                          ┌──────────────────────┐
+                          │ ¿Todo pasó?      │
+                          └──────────┬───────────┘
+                                     │
+                        ┌──────────────┴──────────────┐
+                        │ Sí                  │ No
+                        ▼                      ▼
+               ┌──────────────────┐   ┌─────────────────┐
+               │ Push directo OK  │   │ ❌ ABORTAR      │
+               └──────────────────┘   │ Reportar error  │
+                                       └─────────────────┘
 ```
 
 ---
 
-## 🛠️ Aliases Útils (opcional)
+## 📋 Resumen de Cambios
 
-Afegir a `~/.gitconfig`:
-```bash
-[alias]
-    co = checkout
-    br = branch
-    st = status
-    ci = commit
-    fe = "!f() { git checkout develop && git pull origin develop && git checkout -b feature/$@; }; f"
-    hf = "!f() { git checkout main && git pull origin main && git checkout -b hotfix/$@; }; f"
-    merge-feature = "!f() { git checkout develop && git merge --no-ff feature/$@; }; f"
-    done = "!f() { git checkout develop && git branch -d $@ && git push origin --delete $@; }; f"
-```
+### Cambios en esta versión:
 
-Ús:
-```bash
-git fe lobby-roles      # Crear feature/lobby-roles
-git merge-feature lobby-roles
-git done feature/lobby-roles
-```
+1. **Main es ÚNICAMENTE para producción**
+   - ❌ NUNCA hacer merge directo de `feature/*` a `main`
+   - ✅ `feature/*` → `develop` (cuando la feature está terminada)
+   - ✅ `develop` → `main` (SOLAMENTE cuando hay un release)
+   - ✅ `release/*` → `main` y `develop` (para preparar versión)
+   - ✅ `hotfix/*` → `main` y `develop` (correcciones urgentes)
+
+2. **Flujo de trabajo**
+   - `develop` contiene todas las features en desarrollo
+   - `main` contiene solo versiones estables
+   - Los PRs se hacen a `develop` (no a `main`)
+   - `main` se actualiza SOLO desde `develop` o `release/*`
+
+3. **GitHub Actions**
+   - Solo se ejecutan en `main` y `release/*`
+   - NO se ejecutan en `develop` ni `feature/*`
+   - Esto permite desarrollarse más rápido en `develop`
+   - Los cambios se validan cuando van a producción
+
+4. **Branch Protection**
+   - `main` tiene protección estricta
+   - Solo merges aprobados desde `develop` o `release/*`
+   - `develop` tiene protección para merges desde `feature/*`
 
 ---
 
@@ -500,15 +547,17 @@ git done feature/lobby-roles
 - [Agent Safety](./agent-safety.md) - Medidas de seguridad para agentes AI
 - [Deployment Guide](./deployment.md) - Procedimiento de deployment
 - [Security Skills](../.ai/skills/skill-security.md) - OWASP y seguridad
+- [Sentry Setup](./sentry-setup.md) - Configuración de error tracking
 
 ---
 
-## 📞 Suport
+## 📞 Suporte
 
-Per dubtes sobre el workflow:
+Para dudas sobre el workflow:
 - GitHub Issues: https://github.com/BobFarreras/crims-project/issues
 - Email: dev@digitaistudios.com
 
 ---
 
-**Última actualització:** 20/01/2025
+**Última actualización:** 20/01/2025
+**Versión:** 2.0
