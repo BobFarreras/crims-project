@@ -130,15 +130,16 @@ Operaciones permitidas:
 
 ### ❌ NUNCA hagas:
 1. `git push origin main` directamente (solo release/hotfix aprobados)
-2. Commit de `.env` files
-3. Commit de passwords, API keys, tokens
-4. Commit de archivos `.pem`, `.key`, certificates
-5. `git push --force` en branches compartidos
-6. Commit con mensaje vacío o sin sentido
-7. Borrar archivos sin confirmación
-8. Modificar `package.json` o `go.mod` sin verificar compatibilidad
-9. Commit de `node_modules` o carpetas de build
-10. Modificar archivos de configuración crítica sin revisión
+2. `git merge feature/* a main` (DEBE ir a develop primero)
+3. Commit de `.env` files
+4. Commit de passwords, API keys, tokens
+5. Commit de archivos `.pem`, `.key`, certificates
+6. `git push --force` en branches compartidos
+7. Commit con mensaje vacío o sin sentido
+8. Borrar archivos sin confirmación
+9. Modificar `package.json` o `go.mod` sin verificar compatibilidad
+10. Commit de `node_modules` o carpetas de build
+11. Modificar archivos de configuración crítica sin revisión
 
 ---
 
