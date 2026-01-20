@@ -170,12 +170,36 @@ Separació clara de responsabilitats:
 ## 📚 Documentació
 
 - [Deployment Guide](./docs/deployment.md) - Desplegament a producció
+- [Git Workflow](./docs/git-workflow.md) - Estratègia de branches (Git Flow)
 - [Game Mechanics](./docs/architecture/game-mechanics.md) - Mecàniques de joc
 - [Game Logic Engine](./docs/architecture/game-logic-engine.md) - Motor lògic
 - [Project Structure](./docs/architecture/project-structure.md) - Estructura detallada
 - [Features](./docs/features/) - Especificacions de cada feature (TDD)
 
 ## 🔧 Desenvolupament
+
+### Git Workflow
+
+Aquest projecte utilitza **Git Flow** adaptat per a monorepos:
+
+```
+main              → Producció (sempre estable)
+└── develop       → Integració (pre-producció)
+    ├── feature/* → Noves funcionalitats
+    ├── release/* → Preparació de versions
+    ├── hotfix/*  → Correccions urgents
+    ├── chore/*   → Tasques tècniques
+    └── docs/*    → Documentació
+```
+
+**Flux típic:**
+1. `git checkout develop && git pull origin develop`
+2. `git checkout -b feature/feature-name`
+3. Treballar + commitear
+4. Crear PR (feature → develop)
+5. Merge aprovat + branca esborrada
+
+Veure [Git Workflow](./docs/git-workflow.md) per detalls complets.
 
 ### Workflow TDD
 
