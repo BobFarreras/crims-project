@@ -1,0 +1,60 @@
+name: Crims CI Pipeline
+
+on:
+  push:
+    branches: [ "master", "main" ]
+  pull_request:
+    branches: [ "master", "main" ]
+
+jobs:
+  # Job 1: Backend Tests & Build
+  backend-check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.22'
+        
+    - name: Install Dependencies
+      run: go mod download
+
+    - name: Run Unit Tests
+      run: go test -v ./...
+
+    - name: Build Check
+      run: go build -v ./cmd/server
+
+  # Job 2: Frontend Tests & Lint
+  frontend-check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'pnpm'
+
+    - name: Install pnpm
+      uses: pnpm/action-setup@v3
+      with:
+        version: 9
+
+    - name: Install Dependencies
+      run: pnpm install
+
+    - name: Run Linter
+      run: pnpm lint
+
+    - name: Run Tests (Vitest)
+      run: pnpm test -- run # '-- run' fa que no es quedi esperant (watch mode off)
