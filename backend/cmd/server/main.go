@@ -106,6 +106,39 @@ func main() {
 	})
 
 	// ===============================
+	// DEBUG SENTRY CONFIGURATION
+	// ===============================
+
+	// Endpoint per verificar que Sentry està ben configurat
+	r.Get("/api/test-sentry/debug", func(w http.ResponseWriter, r *http.Request) {
+		debugInfo := map[string]interface{}{
+			"dsn_configured": false,
+			"dsn_value":      "",
+			"environment":    "",
+			"sentry_init":    false,
+		}
+
+		// Check DSN
+		dsn := os.Getenv("SENTRY_DSN")
+		if dsn != "" {
+			debugInfo["dsn_configured"] = true
+			debugInfo["dsn_value"] = dsn[:min(len(dsn), 30)] + "..." // Mostrar només els primers 30 caràcters
+		}
+
+		// Check Environment
+		env := os.Getenv("ENVIRONMENT")
+		if env != "" {
+			debugInfo["environment"] = env
+		}
+
+		// Check si Sentry està inicialitzat
+		// Això és un check simple - no podem veure l'estat intern de Sentry
+		debugInfo["sentry_init"] = (dsn != "")
+
+		web.RespondJSON(w, http.StatusOK, debugInfo)
+	})
+
+	// ===============================
 	// TESTS DE SENTRY (BACKEND)
 	// ===============================
 
