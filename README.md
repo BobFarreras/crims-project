@@ -173,6 +173,8 @@ Separació clara de responsabilitats:
 
 - [Deployment Guide](./docs/deployment.md) - Desplegament a producció
 - [Git Workflow](./docs/git-workflow.md) - Estratègia de branches (Git Flow)
+- [Sentry Setup](./docs/sentry-setup.md) - Configuració d'error tracking
+- [Agent Safety](./docs/agent-safety.md) - Mesures de seguretat per agents AI
 - [Game Mechanics](./docs/architecture/game-mechanics.md) - Mecàniques de joc
 - [Game Logic Engine](./docs/architecture/game-logic-engine.md) - Motor lògic
 - [Project Structure](./docs/architecture/project-structure.md) - Estructura detallada
