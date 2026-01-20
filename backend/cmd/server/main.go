@@ -7,6 +7,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/joho/godotenv"
+
 	// 1. IMPORT INTERN (El teu codi)
 	// Li diem "myMiddleware" per no confondre'l amb el de Chi,
 	// o simplement usem el nom del paquet "middleware" si l'altre l'anomenem diferent.
@@ -25,15 +27,31 @@ import (
 )
 
 func main() {
+	// Carregar variables d'entorn des de .env.local (o .env)
+	// El fitxer ha d'estar a l'arrel del projecte (../ des de backend/)
+	err := godotenv.Load("../.env.local")
+	if err != nil {
+		// Si no es pot carregar .env.local, intentar .env
+		err = godotenv.Load(".env")
+		if err != nil {
+			log.Printf("⚠️  Warning: No s'ha pogut carregar .env.local o .env: %v", err)
+			log.Println("⚠️  Utilitzant variables d'entorn del sistema")
+		} else {
+			log.Println("✅ Carregat .env (a l'arrel del projecte)")
+		}
+	} else {
+		log.Println("✅ Carregat .env.local (a l'arrel del projecte)")
+	}
+
 	// Inicialitzar Sentry per error tracking
-	err := sentry.Init(sentry.ClientOptions{
+	sentryErr := sentry.Init(sentry.ClientOptions{
 		Dsn:         os.Getenv("SENTRY_DSN"),
 		Environment: os.Getenv("ENVIRONMENT"),
 		// Sample Rate (10% de traces)
 		TracesSampleRate: 0.1,
 	})
-	if err != nil {
-		log.Printf("⚠️  Sentry init failed: %v", err)
+	if sentryErr != nil {
+		log.Printf("⚠️  Sentry init failed: %v", sentryErr)
 	} else {
 		// Configurar tags globales
 		sentry.ConfigureScope(func(scope *sentry.Scope) {
