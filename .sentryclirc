@@ -1,0 +1,19 @@
+# Sentry CLI Configuration
+[defaults]
+# Org de Sentry
+org = digitaistudios
+
+# Projecte de Sentry
+project = crims-project
+
+# DSN (sobreescriu per entorn)
+dsn = https://xxx@sentry.io/xxx
+
+# Environment
+environment = development
+
+# Auth token (obtingut de Sentry settings)
+auth_token = sntrys_sntrys_eyJpYXQiOjE3Njg5MzQxMTcuMjkxMDI2LCJ1cmwiOiJodHRwczovL3NlbnRyeS5pbyIsInJlZ2lvbl91cmwiOiJodHRwczovL2RlLnNlbnRyeS5pbyIsIm9yZyI6ImRpZ2l0YWktc3R1ZGlvcyJ9_4g3FYKcuJ2EsmOiHi5FCmQ+PVIY/GkwN0kj6bT6K8gU
+
+[auth]
+token = sntrys_sntrys_sntrys_eyJpYXQiOjE3Njg5MzQxMTcuMjkxMDI2LCJ1cmwiOiJodHRwczovL3NlbnRyeS5pbyIsInJlZ2lvbl91cmwiOiJodHRwczovL2RlLnNlbnRyeS5pbyIsIm9yZyI6ImRpZ2l0YWktc3R1ZGlvcyJ9_4g3FYKcuJ2EsmOiHi5FCmQ+PVIY/GkwN0kj6bT6K8gU
