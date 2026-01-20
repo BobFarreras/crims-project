@@ -91,7 +91,7 @@ git checkout -b feature/lobby-roles
 
 # 2. Treballar i commitear
 git add .
-git commit -m "feat: implement role selection in lobby"
+git commit -m "feat: implementar selección de roles en el lobby"
 git push -u origin feature/lobby-roles
 
 # 3. Crear PR a GitHub (feature/lobby-roles → develop)
@@ -103,17 +103,17 @@ git branch -d feature/lobby-roles
 git push origin --delete feature/lobby-roles
 ```
 
-**Commit naming:**
+**Commit naming (IDIOMA: CASTELLANO):**
 ```
-feat: nova funcionalitat
-fix: correcció de bug
-refactor: refactoring de codi
-test: afegir tests
-docs: documentació
-chore: tasques de manteniment
-style: format de codi (espais, punt i coma)
-perf: millora de rendiment
-ci: canvis a CI/CD
+feat: nueva funcionalidad
+fix: corrección de bug
+refactor: refactorización de código
+test: añadir tests
+docs: documentación
+chore: tareas de mantenimiento
+style: formato de código (espacios, punto y coma)
+perf: mejora de rendimiento
+ci: cambios a CI/CD
 ```
 
 ---
@@ -158,7 +158,7 @@ git checkout -b release/1.0.0
 
 # 3. Commit canvis
 git add .
-git commit -m "chore: prepare release v1.0.0"
+git commit -m "chore: preparar release v1.0.0"
 
 # 4. Merge a main i taggear
 git checkout main
@@ -216,7 +216,7 @@ git checkout -b hotfix/crash-on-login
 
 # 3. Commit i testar
 git add .
-git commit -m "fix: crash on login when using special characters"
+git commit -m "fix: corregir fallo en login al usar caracteres especiales"
 git push -u origin hotfix/crash-on-login
 
 # 4. Merge a main
@@ -324,26 +324,28 @@ test-increase-coverage
 
 ---
 
-## 🤖 Per als Agents AI (OpenCode)
+## 🤖 Para los Agentes AI (OpenCode)
 
-Aquest document és la **font de veritat** per al workflow Git. Quan un agent hagi de:
+Este documento es la **fuente de verdad** para el workflow Git. Cuando un agente deba:
 
-1. **Crear nova funcionalitat:** Crear `feature/feature-nom` des de develop
-2. **Arreglar bug urgent:** Crear `hotfix/descripcio` des de main
-3. **Preparar release:** Crear `release/X.Y.Z` des de develop
-4. **Comitejar:** Usar prefixos (feat, fix, docs, etc.)
-5. **Fusió:** Sempre via Pull Request, mai direct merge
+1. **Crear nueva funcionalidad:** Crear `feature/nombre-feature` desde develop
+2. **Arreglar bug urgente:** Crear `hotfix/descripcion` desde main
+3. **Preparar release:** Crear `release/X.Y.Z` desde develop
+4. **Comitear:** Usar prefijos (feat, fix, docs, etc.) en **CASTELLANO**
+5. **Fusión:** Siempre vía Pull Request, nunca direct merge
 
-**Comanda automàtica per agents:**
+⚠️ **IMPORTANTE:** Antes de CUALQUIER operación que afecte producción, los agentes DEBEN seguir las [Medidas de Seguridad para Agentes AI](./agent-safety.md).
+
+**Comandos automáticos para agentes:**
 ```bash
-# Crear feature nova
-git checkout develop && git pull origin develop && git checkout -b feature/feature-name
+# Crear feature nueva
+git checkout develop && git pull origin develop && git checkout -b feature/nombre-feature
 
 # Crear hotfix
-git checkout main && git pull origin main && git checkout -b hotfix/description
+git checkout main && git pull origin main && git checkout -b hotfix/descripcion
 
-# Després de merge (aprobat)
-git checkout develop && git branch -d feature/feature-name && git push origin --delete feature/feature-name
+# Después de merge (aprobado)
+git checkout develop && git branch -d feature/nombre-feature && git push origin --delete feature/nombre-feature
 ```
 
 ---
@@ -451,6 +453,14 @@ git fe lobby-roles      # Crear feature/lobby-roles
 git merge-feature lobby-roles
 git done feature/lobby-roles
 ```
+
+---
+
+## 🔗 Recursos Relacionados
+
+- [Agent Safety](./agent-safety.md) - Medidas de seguridad para agentes AI
+- [Deployment Guide](./deployment.md) - Procedimiento de deployment
+- [Security Skills](../.ai/skills/skill-security.md) - OWASP y seguridad
 
 ---
 
