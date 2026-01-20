@@ -1,10 +1,11 @@
 name: Crims CI Pipeline
 
+# Solo se ejecuta en main y release branches para seguridad
 on:
   push:
-    branches: [ "master", "main" ]
+    branches: [ "main", "release/*" ]
   pull_request:
-    branches: [ "master", "main" ]
+    branches: [ "main", "release/*" ]
 
 jobs:
   # Job 1: Backend Tests & Build
@@ -15,12 +16,12 @@ jobs:
         working-directory: ./backend
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
-        go-version: '1.22'
-        
+        go-version: '1.25.6'
+
     - name: Install Dependencies
       run: go mod download
 
@@ -30,6 +31,9 @@ jobs:
     - name: Build Check
       run: go build -v ./cmd/server
 
+    - name: Security Check (go vet)
+      run: go vet ./...
+
   # Job 2: Frontend Tests & Lint
   frontend-check:
     runs-on: ubuntu-latest
@@ -38,7 +42,7 @@ jobs:
         working-directory: ./frontend
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
@@ -58,3 +62,77 @@ jobs:
 
     - name: Run Tests (Vitest)
       run: pnpm test -- run # '-- run' fa que no es quedi esperant (watch mode off)
+
+    - name: Build Check
+      run: pnpm build
+
+  # Job 3: Security Checks
+  security-check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Check for exposed secrets
+      run: |
+        # Verificar que no se hayan commiteado secretos
+        git log --all -p --grep="password\|secret\|api_key\|token" | head -20 || true
+
+    - name: Check for .env files
+      run: |
+        # Verificar que no existan archivos .env en el repo
+        if git ls-files | grep -E "\.env$"; then
+          echo "❌ ERROR: Encontrados archivos .env en el repositorio"
+          exit 1
+        fi
+        echo "✅ No se encontraron archivos .env"
+
+    - name: Check for node_modules
+      run: |
+        # Verificar que no existan node_modules commiteados
+        if git ls-files | grep -E "node_modules"; then
+          echo "❌ ERROR: Encontrados node_modules en el repositorio"
+          exit 1
+        fi
+        echo "✅ No se encontraron node_modules"
+
+  # Job 4: E2E Tests (opcional, solo en main)
+  e2e-tests:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'pnpm'
+
+    - name: Install pnpm
+      uses: pnpm/action-setup@v3
+      with:
+        version: 9
+
+    - name: Install Dependencies
+      run: |
+        cd frontend && pnpm install
+        cd backend && go mod download
+
+    - name: Install Playwright
+      run: |
+        cd frontend
+        pnpm add -D @playwright/test
+        npx playwright install --with-deps
+
+    - name: Run E2E Tests
+      run: |
+        cd frontend
+        npx playwright test
+
+    - name: Upload Playwright Report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-report
+        path: frontend/playwright-report/
+        retention-days: 30

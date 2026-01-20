@@ -142,6 +142,35 @@ Operaciones permitidas:
 
 ---
 
+## 🤖 GitHub Actions - Cuando se Ejecutan los Tests
+
+### Regla de Oro:
+**Los GitHub Actions SOLO se ejecutan en `main` y `release/*` branches.**
+
+Esto significa:
+- ✅ Si haces push a `main` → CI/CD se ejecuta (tests, lint, build)
+- ✅ Si haces push a `release/*` → CI/CD se ejecuta (tests, lint, build)
+- ❌ Si haces push a `develop` → CI/CD NO se ejecuta (ahorra tiempo)
+- ❌ Si haces push a `feature/*` → CI/CD NO se ejecuta (ahorra tiempo)
+
+### Ventajas para Agentes AI:
+1. **Seguridad:** Los cambios solo se verifican cuando van a producción
+2. **Velocidad:** Puedes commitear en `develop` sin esperar el CI/CD
+3. **Previene Roturas:** Si el CI/CD falla, el PR no puede mergearse
+
+### ¿Debes Ejecutar Tests Localmente?
+
+**SÍ, SIEMPRE:**
+- Antes de CUALQUIER commit
+- Sigue el checklist de abajo
+
+**POR QUÉ:**
+- Aunque el CI/CD solo corra en `main` y `release`, los tests deben pasar localmente
+- Esto asegura que `develop` esté siempre en estado funcional
+- Cuando crees un `release/*` y el CI/CD falle, sabrás exactamente qué arreglar
+
+---
+
 ## ✅ Checklist Antes de Hacer Push
 
 Siempre ejecutar este checklist antes de cualquier push:

@@ -360,6 +360,8 @@ git checkout develop && git branch -d feature/nombre-feature && git push origin 
   - CI/CD pipeline
   - Tests (frontend + backend)
   - Linter
+  - Security checks
+  - E2E tests
 - ✅ Require branches to be up to date before merging
 - ❌ Do not allow bypassing the above settings
 
@@ -367,6 +369,43 @@ git checkout develop && git branch -d feature/nombre-feature && git push origin 
 - ✅ Require pull request before merging
 - ✅ Require approvals: 1
 - ✅ Require status checks to pass
+
+## 🤖 GitHub Actions - Seguridad Adicional
+
+### Solo se Ejecuta en Branches Seguras
+
+Los GitHub Actions **SOLO** se ejecutan en:
+- ✅ `main` - Producción
+- ✅ `release/*` - Preparación de release
+
+**NO** se ejecutan en:
+- ❌ `develop` - Integración (para no romper nada mientras se desarrolla)
+- ❌ `feature/*` - Desarrollo de funcionalidades
+- ❌ `hotfix/*` - Correcciones urgentes (se ejecutan después de merge a main)
+
+### Ventajas de esta Estrategia
+
+1. **Seguridad:**
+   - Los cambios solo se verifican cuando van a producción o release
+   - Evita que el CI/CD corra inútilmente en branches de desarrollo
+
+2. **Velocidad:**
+   - Los desarrolladores pueden commitear en `develop` sin esperar el CI/CD
+   - El CI/CD solo corre cuando realmente importa
+
+3. **Previene Roturas:**
+   - Los tests solo se ejecutan cuando se va a hacer merge a `main` o `release`
+   - Si fallan, el PR no puede mergearse
+
+### ¿Cuándo se Ejecuta el CI/CD?
+
+```
+develop → release/1.0.0     → CI/CD ✅
+release/1.0.0 → main       → CI/CD ✅
+feature/* → develop         → CI/CD ❌ (local tests only)
+hotfix/* → main             → CI/CD ✅
+main (direct push)          → CI/CD ✅ (si bypassa branch protection)
+```
 
 ---
 

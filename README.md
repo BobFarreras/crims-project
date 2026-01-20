@@ -55,11 +55,13 @@ docker-compose up -d
 
 ### Variables d'Entorn
 
-Copia `.env.example` a `.env` i configura:
+Copia `.env.example` a `.env.local` i configura:
 
 ```bash
-cp .env.example .env
+cp .env.example .env.local
 ```
+
+**IMPORTANTE:** Usa `.env.local` para desarrollo local (este archivo se ignora en git). Para producción, configura las variables en el hosting (Vercel/Docker).
 
 Variables clau:
 - `NEXT_PUBLIC_API_URL` - URL del backend API
