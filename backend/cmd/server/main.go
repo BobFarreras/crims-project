@@ -348,28 +348,29 @@ func main() {
 		w.Write([]byte("🕵️‍♂️ Backend Operatiu amb Logs i Seguretat"))
 	})
 
-	r.Get("/api/status", func(w http.ResponseWriter, r *http.Request) {
-		// Usem el teu paquet "web" que hem arreglat al Pas 1
-		status := map[string]string{
-			"system":  "Crims Backend",
-			"status":  "healthy",
-			"version": "0.1.0-alpha",
-		}
-		web.RespondJSON(w, http.StatusOK, status)
-	})
+	apihttp.RegisterAPIV1Routes(r, func(r chi.Router) {
+		r.Get("/status", func(w http.ResponseWriter, r *http.Request) {
+			status := map[string]string{
+				"system":  "Crims Backend",
+				"status":  "healthy",
+				"version": "0.1.0-alpha",
+			}
+			web.RespondJSON(w, http.StatusOK, status)
+		})
 
-	r.Get("/api/health", apihttp.NewHealthHandler(pocketBaseClient))
-	apihttp.RegisterGameRoutes(r, gameService)
-	apihttp.RegisterPlayerRoutes(r, playerService)
-	apihttp.RegisterEventRoutes(r, eventService)
-	apihttp.RegisterClueRoutes(r, clueService)
-	apihttp.RegisterPersonRoutes(r, personService)
-	apihttp.RegisterHypothesisRoutes(r, hypothesisService)
-	apihttp.RegisterAccusationRoutes(r, accusationService)
-	apihttp.RegisterForensicRoutes(r, forensicService)
-	apihttp.RegisterTimelineRoutes(r, timelineService)
-	apihttp.RegisterInterrogationRoutes(r, interrogationService)
-	apihttp.RegisterLobbyRoutes(r, lobbyService)
+		r.Get("/health", apihttp.NewHealthHandler(pocketBaseClient))
+		apihttp.RegisterGameRoutes(r, gameService)
+		apihttp.RegisterPlayerRoutes(r, playerService)
+		apihttp.RegisterEventRoutes(r, eventService)
+		apihttp.RegisterClueRoutes(r, clueService)
+		apihttp.RegisterPersonRoutes(r, personService)
+		apihttp.RegisterHypothesisRoutes(r, hypothesisService)
+		apihttp.RegisterAccusationRoutes(r, accusationService)
+		apihttp.RegisterForensicRoutes(r, forensicService)
+		apihttp.RegisterTimelineRoutes(r, timelineService)
+		apihttp.RegisterInterrogationRoutes(r, interrogationService)
+		apihttp.RegisterLobbyRoutes(r, lobbyService)
+	})
 
 	// ===============================
 	// DEBUG SENTRY CONFIGURATION
