@@ -359,6 +359,7 @@ func main() {
 		})
 
 		r.Get("/health", apihttp.NewHealthHandler(pocketBaseClient))
+		apihttp.RegisterMetricsRoutes(r)
 		apihttp.RegisterGameRoutes(r, gameService)
 		apihttp.RegisterPlayerRoutes(r, playerService)
 		apihttp.RegisterEventRoutes(r, eventService)
