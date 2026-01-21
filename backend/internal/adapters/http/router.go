@@ -45,6 +45,11 @@ func RegisterAccusationRoutes(r chi.Router, service ports.AccusationService) {
 	r.Get("/api/games/{id}/accusations", withPathParam(idParamKey, "id", NewListAccusationsByGameHandler(service)))
 }
 
+func RegisterForensicRoutes(r chi.Router, service ports.ForensicService) {
+	r.Post("/api/forensics", NewCreateForensicHandler(service))
+	r.Get("/api/games/{id}/forensics", withPathParam(idParamKey, "id", NewListForensicsByGameHandler(service)))
+}
+
 func withPathParam(key contextKey, name string, next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		value := chi.URLParam(r, name)
