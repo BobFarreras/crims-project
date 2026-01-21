@@ -55,6 +55,11 @@ func RegisterTimelineRoutes(r chi.Router, service ports.TimelineService) {
 	r.Get("/api/games/{id}/timeline", withPathParam(idParamKey, "id", NewListTimelineByGameHandler(service)))
 }
 
+func RegisterInterrogationRoutes(r chi.Router, service ports.InterrogationService) {
+	r.Post("/api/interrogations", NewCreateInterrogationHandler(service))
+	r.Get("/api/games/{id}/interrogations", withPathParam(idParamKey, "id", NewListInterrogationsByGameHandler(service)))
+}
+
 func withPathParam(key contextKey, name string, next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		value := chi.URLParam(r, name)
