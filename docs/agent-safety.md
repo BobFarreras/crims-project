@@ -8,13 +8,14 @@ Este documento definece las medidas de seguridad que DEBEN seguir los agentes AI
 
 ## ⚠️ Principios Fundamentales
 
-### 1. Never Push Directly to Main
-**PROHIBIDO:** Nunca hacer `git push origin main` directamente sin aprobación.
+### 1. Never Push or Merge to Main
+**PROHIBIDO:** Nunca hacer `git push origin main` ni `git merge` hacia `main`.
 
 **CORRECTO:**
 - Trabajar en `feature/*`, `hotfix/*`, `release/*`, `chore/*`, `docs/*`
 - Crear Pull Request para aprobación
 - Esperar aprobación humana antes del merge
+- El merge y push a `main` lo hace SOLO el usuario
 
 ### 2. Branch Protection Rules
 Antes de CUALQUIER operación que afecte código crítico:
@@ -103,12 +104,13 @@ Operaciones permitidas:
 1. **VERIFICAR TDD PRIMERO:**
    - ¿Existe `docs/features/XX.md`? → Si no, PEDIR PERMISO
    - ¿Existe el test? → Si no, PEDIR PERMISO
-2. Crear `branch: feature/nombre`
+2. Crear `branch: feature/nombre` (SIEMPRE nueva branch)
 3. Implementar siguiendo TDD
 4. Ejecutar `make test-unit` → **Si falla, NO COMMIT**
 5. Ejecutar `pnpm lint` → **Si falla, NO COMMIT**
 6. Crear PR a `develop`
-7. **NO puede hacer push directamente** → PEDIR REVISIÓN
+7. **NO puede hacer merge ni push a `main`** → PEDIR REVISIÓN
+8. **La feina de l'agent acaba quan `develop` es mergeja a `release/*`**
 
 ### Nivel 4: Hotfix en Producción (Riesgo Crítico) 🔴
 Operaciones permitidas:
@@ -129,8 +131,10 @@ Operaciones permitidas:
 ## 🚫 Prohibiciones Absolutas
 
 ### ❌ NUNCA hagas:
-1. `git push origin main` directamente (solo release/hotfix aprobados)
-2. `git merge feature/* a main` (DEBE ir a develop primero)
+1. `git push origin main` directamente (solo el usuario)
+2. `git merge` hacia `main` (solo el usuario)
+3. Borrar branches `release/*` (es guarda l'històric)
+4. `git merge feature/* a main` (DEBE ir a develop primero)
 3. Commit de `.env` files
 4. Commit de passwords, API keys, tokens
 5. Commit de archivos `.pem`, `.key`, certificates
@@ -347,12 +351,12 @@ git diff --cached --name-only | grep -E "node_modules|\.next|build|\.git|\.env"
    git log --oneline -5
    git diff HEAD~1
    ```
-4. Deshacer cambios:
+4. Deshacer cambios (propuesta, usuari executa el push):
    ```bash
    git revert HEAD
-   git push origin main
    ```
-5. Reportar qué falló y por qué
+5. Informar l'usuari perquè faci el `git push origin main`
+6. Reportar què va fallar i per què
 
 ### Si Commiteas Secretos
 

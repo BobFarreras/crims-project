@@ -136,7 +136,7 @@ ci: cambios a CI/CD
 - **Què és:** Preparació d'una versió per producció
 - **Origen:** Es creen des de `develop`
 - **Destí:** Es mergejen a `main` i `develop`
-- **Vida:** S'esborren després del merge
+- **Vida:** **No s'esborren** (es manté l'històric de versions)
 
 **Nomenclatura:**
 ```
@@ -156,6 +156,8 @@ release/2025-01
 - ✅ Documentació de release
 - ❌ NO features noves
 
+**Nota per agents:** L'agent només arriba fins al merge de `develop` a `release/*`. El merge i push a `main` el fa exclusivament l'usuari.
+
 **Flux:**
 ```bash
 # 1. Crear release des de develop
@@ -172,7 +174,7 @@ git checkout -b release/1.0.0
 git add .
 git commit -m "chore: preparar release v1.0.0"
 
-# 4. Merge a main i taggear
+# 4. Merge a main i taggear (NOMÉS USUARI)
 git checkout main
 git merge --no-ff release/1.0.0
 git tag -a v1.0.0 -m "Release v1.0.0 - Initial launch"
@@ -184,9 +186,7 @@ git checkout develop
 git merge --no-ff release/1.0.0
 git push origin develop
 
-# 6. Esborrar release
-git branch -d release/1.0.0
-git push origin --delete release/1.0.0
+# 6. No esborres release (es guarda la versio)
 ```
 
 ---
@@ -322,12 +322,14 @@ main (v1.0.0 - PRODUCCIÓN)
 
 Este documento es la **fuente de verdad** para el workflow Git. Cuando un agente deba:
 
-1. **Crear nueva funcionalidad:** Crear `feature/nombre-feature` desde develop
+1. **Crear nueva funcionalidad o lògica:** Crear sempre `feature/nombre-feature` desde develop
 2. **Arreglar bug urgente:** Crear `hotfix/descripcion` desde main
 3. **Preparar release:** Crear `release/X.Y.Z` desde develop
 4. **Comitejar:** Usar prefijos (feat, fix, docs, etc.) en **CASTELLANO**
 5. **Fusión:** Siempre vía Pull Request, nunca direct merge
-6. **⚠️ NUNCA hacer merge directo de `feature/*` a `main`**
+6. **⚠️ L'agent MAI fa merge ni push a `main` (això ho fa l'usuari)**
+7. **⚠️ L'agent finalitza la feina quan `develop` es mergeja a `release/*`**
+8. **⚠️ NO eliminar branches `release/*` (es mantenen les versions)**
 
 **Comanda automática para agentes:**
 ```bash
