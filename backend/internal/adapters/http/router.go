@@ -30,6 +30,11 @@ func RegisterClueRoutes(r chi.Router, service ports.ClueService) {
 	r.Get("/api/games/{id}/clues", withPathParam(idParamKey, "id", NewListCluesByGameHandler(service)))
 }
 
+func RegisterPersonRoutes(r chi.Router, service ports.PersonService) {
+	r.Post("/api/persons", NewCreatePersonHandler(service))
+	r.Get("/api/games/{id}/persons", withPathParam(idParamKey, "id", NewListPersonsByGameHandler(service)))
+}
+
 func withPathParam(key contextKey, name string, next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		value := chi.URLParam(r, name)
