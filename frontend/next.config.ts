@@ -24,6 +24,8 @@ export default withSentryConfig(nextConfig, {
   widenClientFileUpload: true,
   tunnelRoute: "/monitoring",
 
-  // Opcions de webpack
-  hideSourceMaps: true,
+  // Opcions de sourcemaps
+  sourcemaps: {
+    deleteAfterUpload: true,
+  },
 });
