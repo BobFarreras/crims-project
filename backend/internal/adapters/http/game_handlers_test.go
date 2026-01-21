@@ -11,7 +11,7 @@ import (
 	"github.com/digitaistudios/crims-backend/internal/ports"
 )
 
-type fakeGameRepository struct {
+type fakeGameService struct {
 	createResult ports.GameRecord
 	createErr    error
 	getByID      ports.GameRecord
@@ -20,21 +20,21 @@ type fakeGameRepository struct {
 	getByCodeErr error
 }
 
-func (f fakeGameRepository) CreateGame(ctx context.Context, input ports.GameRecordInput) (ports.GameRecord, error) {
+func (f fakeGameService) CreateGame(ctx context.Context, input ports.GameRecordInput) (ports.GameRecord, error) {
 	if f.createErr != nil {
 		return ports.GameRecord{}, f.createErr
 	}
 	return f.createResult, nil
 }
 
-func (f fakeGameRepository) GetGameByID(ctx context.Context, id string) (ports.GameRecord, error) {
+func (f fakeGameService) GetGameByID(ctx context.Context, id string) (ports.GameRecord, error) {
 	if f.getByIDErr != nil {
 		return ports.GameRecord{}, f.getByIDErr
 	}
 	return f.getByID, nil
 }
 
-func (f fakeGameRepository) GetGameByCode(ctx context.Context, code string) (ports.GameRecord, error) {
+func (f fakeGameService) GetGameByCode(ctx context.Context, code string) (ports.GameRecord, error) {
 	if f.getByCodeErr != nil {
 		return ports.GameRecord{}, f.getByCodeErr
 	}
@@ -42,10 +42,10 @@ func (f fakeGameRepository) GetGameByCode(ctx context.Context, code string) (por
 }
 
 func TestCreateGameHandler_OK(t *testing.T) {
-	repo := fakeGameRepository{
+	service := fakeGameService{
 		createResult: ports.GameRecord{ID: "game-1", Code: "ABCD", State: "INVESTIGATION", Seed: "seed-1"},
 	}
-	handler := NewCreateGameHandler(repo)
+	handler := NewCreateGameHandler(service)
 
 	payload := []byte(`{"code":"ABCD","state":"INVESTIGATION","seed":"seed-1"}`)
 	request := httptest.NewRequest(http.MethodPost, "/api/games", bytes.NewReader(payload))
@@ -59,8 +59,8 @@ func TestCreateGameHandler_OK(t *testing.T) {
 }
 
 func TestCreateGameHandler_InvalidInput(t *testing.T) {
-	repo := fakeGameRepository{}
-	handler := NewCreateGameHandler(repo)
+	service := fakeGameService{}
+	handler := NewCreateGameHandler(service)
 
 	request := httptest.NewRequest(http.MethodPost, "/api/games", bytes.NewReader([]byte(`{invalid`)))
 	response := httptest.NewRecorder()
@@ -73,10 +73,10 @@ func TestCreateGameHandler_InvalidInput(t *testing.T) {
 }
 
 func TestGetGameByIDHandler_OK(t *testing.T) {
-	repo := fakeGameRepository{
+	service := fakeGameService{
 		getByID: ports.GameRecord{ID: "game-1", Code: "ABCD", State: "INVESTIGATION", Seed: "seed-1"},
 	}
-	handler := NewGetGameByIDHandler(repo)
+	handler := NewGetGameByIDHandler(service)
 
 	request := httptest.NewRequest(http.MethodGet, "/api/games/game-1", nil)
 	request = request.WithContext(context.WithValue(request.Context(), idParamKey, "game-1"))
@@ -90,8 +90,8 @@ func TestGetGameByIDHandler_OK(t *testing.T) {
 }
 
 func TestGetGameByCodeHandler_NotFound(t *testing.T) {
-	repo := fakeGameRepository{getByCodeErr: repo_pb.ErrRecordNotFound}
-	handler := NewGetGameByCodeHandler(repo)
+	service := fakeGameService{getByCodeErr: repo_pb.ErrRecordNotFound}
+	handler := NewGetGameByCodeHandler(service)
 
 	request := httptest.NewRequest(http.MethodGet, "/api/games/by-code/ABCD", nil)
 	request = request.WithContext(context.WithValue(request.Context(), codeParamKey, "ABCD"))

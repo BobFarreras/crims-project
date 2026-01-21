@@ -9,10 +9,10 @@ import (
 )
 
 // RegisterGameRoutes defineix les rutes de Game.
-func RegisterGameRoutes(r chi.Router, repo ports.GameRepository) {
-	r.Post("/api/games", NewCreateGameHandler(repo))
-	r.Get("/api/games/{id}", withPathParam(idParamKey, "id", NewGetGameByIDHandler(repo)))
-	r.Get("/api/games/by-code/{code}", withPathParam(codeParamKey, "code", NewGetGameByCodeHandler(repo)))
+func RegisterGameRoutes(r chi.Router, service ports.GameService) {
+	r.Post("/api/games", NewCreateGameHandler(service))
+	r.Get("/api/games/{id}", withPathParam(idParamKey, "id", NewGetGameByIDHandler(service)))
+	r.Get("/api/games/by-code/{code}", withPathParam(codeParamKey, "code", NewGetGameByCodeHandler(service)))
 }
 
 func withPathParam(key contextKey, name string, next http.HandlerFunc) http.HandlerFunc {
