@@ -160,6 +160,7 @@ release/2025-01
 **Documentació de la versió (recomanat):**
 - Afegir nota de release a `docs/releases/vX.Y.Z.md`
 - Actualitzar `CHANGELOG.md` si existeix
+- Actualitzar versio a `frontend/package.json`
 
 **Nota per agents:** L'agent només arriba fins al merge de `develop` a `release/*`. El merge i push a `main` el fa exclusivament l'usuari.
 

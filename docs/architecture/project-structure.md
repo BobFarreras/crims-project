@@ -71,6 +71,9 @@
 │       ├── api-client.ts    # Fetch wrapper amb Auth Header
 │       └── pocketbase.ts    # Auth wrapper (Login/Logout logic)
 
+## 📘 Guia de Fases
+- Veure `docs/architecture/project-phases.md` per el flux pas a pas.
+
 ## GLOBAL & TESTS
 ## On viuen els tests d'integració i la configuració.
 

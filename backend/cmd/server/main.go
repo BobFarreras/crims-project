@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -12,7 +13,11 @@ import (
 	// 1. IMPORT INTERN (El teu codi)
 	// Li diem "myMiddleware" per no confondre'l amb el de Chi,
 	// o simplement usem el nom del paquet "middleware" si l'altre l'anomenem diferent.
+	apihttp "github.com/digitaistudios/crims-backend/internal/adapters/http"
+	"github.com/digitaistudios/crims-backend/internal/adapters/repo_pb"
 	"github.com/digitaistudios/crims-backend/internal/middleware"
+	"github.com/digitaistudios/crims-backend/internal/platform/config"
+	"github.com/digitaistudios/crims-backend/internal/ports"
 
 	// 2. IMPORT INTERN (La teva utilitat web)
 	"github.com/digitaistudios/crims-backend/internal/platform/web"
@@ -25,6 +30,30 @@ import (
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 )
+
+type disabledPocketBaseClient struct {
+	err error
+}
+
+func (d disabledPocketBaseClient) Ping(ctx context.Context) error {
+	return d.err
+}
+
+type disabledGameRepository struct {
+	err error
+}
+
+func (d disabledGameRepository) CreateGame(ctx context.Context, input ports.GameRecordInput) (ports.GameRecord, error) {
+	return ports.GameRecord{}, d.err
+}
+
+func (d disabledGameRepository) GetGameByID(ctx context.Context, id string) (ports.GameRecord, error) {
+	return ports.GameRecord{}, d.err
+}
+
+func (d disabledGameRepository) GetGameByCode(ctx context.Context, code string) (ports.GameRecord, error) {
+	return ports.GameRecord{}, d.err
+}
 
 func main() {
 	// Carregar variables d'entorn des de .env.local (o .env)
@@ -43,10 +72,16 @@ func main() {
 		log.Println("✅ Carregat .env.local (a l'arrel del projecte)")
 	}
 
+	// Carregar configuracio
+	cfg, cfgErr := config.Load()
+	if cfgErr != nil {
+		log.Fatalf("❌ Error configuracio: %v", cfgErr)
+	}
+
 	// Inicialitzar Sentry per error tracking
 	sentryErr := sentry.Init(sentry.ClientOptions{
 		Dsn:         os.Getenv("SENTRY_DSN"),
-		Environment: os.Getenv("ENVIRONMENT"),
+		Environment: cfg.Environment,
 		// Sample Rate (10% de traces)
 		TracesSampleRate: 0.1,
 	})
@@ -67,6 +102,21 @@ func main() {
 	// Ara "middleware" es refereix a la TEVA carpeta internal/middleware
 	logger := middleware.SetupLogger()
 	logger.Info("🔌 Inicialitzant Crims de Mitjanit Backend...")
+
+	var pocketBaseClient ports.PocketBaseClient
+	var gameRepository ports.GameRepository
+	pbClient, pbErr := repo_pb.NewClient(repo_pb.Config{
+		BaseURL: cfg.PocketBaseURL,
+		Timeout: cfg.PocketBaseTimeout,
+	})
+	if pbErr != nil {
+		logger.Warn("PocketBase client disabled", "error", pbErr)
+		pocketBaseClient = disabledPocketBaseClient{err: pbErr}
+		gameRepository = disabledGameRepository{err: pbErr}
+	} else {
+		pocketBaseClient = pbClient
+		gameRepository = repo_pb.NewGameRepository(pbClient)
+	}
 
 	r := chi.NewRouter()
 
@@ -122,6 +172,9 @@ func main() {
 		}
 		web.RespondJSON(w, http.StatusOK, status)
 	})
+
+	r.Get("/api/health", apihttp.NewHealthHandler(pocketBaseClient))
+	apihttp.RegisterGameRoutes(r, gameRepository)
 
 	// ===============================
 	// DEBUG SENTRY CONFIGURATION
@@ -222,10 +275,9 @@ func main() {
 		})
 	})
 
-	port := "8080"
-	logger.Info("🚀 Servidor escoltant", "port", port, "url", "http://localhost:"+port)
+	logger.Info("🚀 Servidor escoltant", "port", cfg.Port, "url", "http://localhost:"+cfg.Port)
 
-	listenErr := http.ListenAndServe(":"+port, r)
+	listenErr := http.ListenAndServe(":"+cfg.Port, r)
 	if listenErr != nil {
 		logger.Error("❌ Error fatal al servidor", "error", listenErr)
 		os.Exit(1)
