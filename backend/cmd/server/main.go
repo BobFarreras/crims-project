@@ -88,6 +88,22 @@ func (d disabledEventRepository) ListEventsByGame(ctx context.Context, gameID st
 	return nil, d.err
 }
 
+type disabledClueRepository struct {
+	err error
+}
+
+func (d disabledClueRepository) CreateClue(ctx context.Context, input ports.ClueRecordInput) (ports.ClueRecord, error) {
+	return ports.ClueRecord{}, d.err
+}
+
+func (d disabledClueRepository) GetClueByID(ctx context.Context, id string) (ports.ClueRecord, error) {
+	return ports.ClueRecord{}, d.err
+}
+
+func (d disabledClueRepository) ListCluesByGame(ctx context.Context, gameID string) ([]ports.ClueRecord, error) {
+	return nil, d.err
+}
+
 func main() {
 	// Carregar variables d'entorn des de .env.local (o .env)
 	// El fitxer ha d'estar a l'arrel del projecte (../ des de backend/)
@@ -140,6 +156,7 @@ func main() {
 	var gameRepository ports.GameRepository
 	var playerRepository ports.PlayerRepository
 	var eventRepository ports.EventRepository
+	var clueRepository ports.ClueRepository
 	pbClient, pbErr := repo_pb.NewClient(repo_pb.Config{
 		BaseURL: cfg.PocketBaseURL,
 		Timeout: cfg.PocketBaseTimeout,
@@ -150,16 +167,19 @@ func main() {
 		gameRepository = disabledGameRepository{err: pbErr}
 		playerRepository = disabledPlayerRepository{err: pbErr}
 		eventRepository = disabledEventRepository{err: pbErr}
+		clueRepository = disabledClueRepository{err: pbErr}
 	} else {
 		pocketBaseClient = pbClient
 		gameRepository = repo_pb.NewGameRepository(pbClient)
 		playerRepository = repo_pb.NewPlayerRepository(pbClient)
 		eventRepository = repo_pb.NewEventRepository(pbClient)
+		clueRepository = repo_pb.NewClueRepository(pbClient)
 	}
 
 	gameService := services.NewGameService(gameRepository)
 	playerService := services.NewPlayerService(playerRepository)
 	eventService := services.NewEventService(eventRepository)
+	clueService := services.NewClueService(clueRepository)
 
 	r := chi.NewRouter()
 
@@ -220,6 +240,7 @@ func main() {
 	apihttp.RegisterGameRoutes(r, gameService)
 	apihttp.RegisterPlayerRoutes(r, playerService)
 	apihttp.RegisterEventRoutes(r, eventService)
+	apihttp.RegisterClueRoutes(r, clueService)
 
 	// ===============================
 	// DEBUG SENTRY CONFIGURATION
