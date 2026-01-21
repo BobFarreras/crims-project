@@ -26,6 +26,6 @@ export default withSentryConfig(nextConfig, {
 
   // Opcions de sourcemaps
   sourcemaps: {
-    deleteAfterUpload: true,
+    deleteSourcemapsAfterUpload: true,
   },
 });
