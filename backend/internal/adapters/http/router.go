@@ -60,6 +60,10 @@ func RegisterInterrogationRoutes(r chi.Router, service ports.InterrogationServic
 	r.Get("/api/games/{id}/interrogations", withPathParam(idParamKey, "id", NewListInterrogationsByGameHandler(service)))
 }
 
+func RegisterLobbyRoutes(r chi.Router, service ports.LobbyService) {
+	r.Post("/api/lobby/join", NewLobbyJoinHandler(service))
+}
+
 func withPathParam(key contextKey, name string, next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		value := chi.URLParam(r, name)
