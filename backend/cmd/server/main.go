@@ -72,6 +72,22 @@ func (d disabledPlayerRepository) ListPlayersByGame(ctx context.Context, gameID 
 	return nil, d.err
 }
 
+type disabledEventRepository struct {
+	err error
+}
+
+func (d disabledEventRepository) CreateEvent(ctx context.Context, input ports.EventRecordInput) (ports.EventRecord, error) {
+	return ports.EventRecord{}, d.err
+}
+
+func (d disabledEventRepository) GetEventByID(ctx context.Context, id string) (ports.EventRecord, error) {
+	return ports.EventRecord{}, d.err
+}
+
+func (d disabledEventRepository) ListEventsByGame(ctx context.Context, gameID string) ([]ports.EventRecord, error) {
+	return nil, d.err
+}
+
 func main() {
 	// Carregar variables d'entorn des de .env.local (o .env)
 	// El fitxer ha d'estar a l'arrel del projecte (../ des de backend/)
@@ -123,6 +139,7 @@ func main() {
 	var pocketBaseClient ports.PocketBaseClient
 	var gameRepository ports.GameRepository
 	var playerRepository ports.PlayerRepository
+	var eventRepository ports.EventRepository
 	pbClient, pbErr := repo_pb.NewClient(repo_pb.Config{
 		BaseURL: cfg.PocketBaseURL,
 		Timeout: cfg.PocketBaseTimeout,
@@ -132,14 +149,17 @@ func main() {
 		pocketBaseClient = disabledPocketBaseClient{err: pbErr}
 		gameRepository = disabledGameRepository{err: pbErr}
 		playerRepository = disabledPlayerRepository{err: pbErr}
+		eventRepository = disabledEventRepository{err: pbErr}
 	} else {
 		pocketBaseClient = pbClient
 		gameRepository = repo_pb.NewGameRepository(pbClient)
 		playerRepository = repo_pb.NewPlayerRepository(pbClient)
+		eventRepository = repo_pb.NewEventRepository(pbClient)
 	}
 
 	gameService := services.NewGameService(gameRepository)
 	playerService := services.NewPlayerService(playerRepository)
+	eventService := services.NewEventService(eventRepository)
 
 	r := chi.NewRouter()
 
@@ -199,6 +219,7 @@ func main() {
 	r.Get("/api/health", apihttp.NewHealthHandler(pocketBaseClient))
 	apihttp.RegisterGameRoutes(r, gameService)
 	apihttp.RegisterPlayerRoutes(r, playerService)
+	apihttp.RegisterEventRoutes(r, eventService)
 
 	// ===============================
 	// DEBUG SENTRY CONFIGURATION

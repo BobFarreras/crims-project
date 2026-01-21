@@ -20,6 +20,11 @@ func RegisterPlayerRoutes(r chi.Router, service ports.PlayerService) {
 	r.Get("/api/games/{id}/players", withPathParam(idParamKey, "id", NewListPlayersByGameHandler(service)))
 }
 
+func RegisterEventRoutes(r chi.Router, service ports.EventService) {
+	r.Post("/api/events", NewCreateEventHandler(service))
+	r.Get("/api/games/{id}/events", withPathParam(idParamKey, "id", NewListEventsByGameHandler(service)))
+}
+
 func withPathParam(key contextKey, name string, next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		value := chi.URLParam(r, name)
