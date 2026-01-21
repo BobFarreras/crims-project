@@ -180,6 +180,8 @@ Esto significa:
 
 Siempre ejecutar este checklist antes de cualquier push:
 
+**Checklist local complet (lint + test + build):** `docs/checklists/local-ci.md`
+
 ### Paso 1: Verificación de Seguridad
 ```bash
 # ¿Hay secretos en el commit?

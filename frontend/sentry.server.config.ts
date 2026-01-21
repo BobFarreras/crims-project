@@ -14,7 +14,6 @@ Sentry.init({
   integrations: [
     Sentry.httpIntegration({
       breadcrumbs: true,
-      tracing: true,
     }),
   ],
 
