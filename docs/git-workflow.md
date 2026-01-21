@@ -137,6 +137,7 @@ ci: cambios a CI/CD
 - **Origen:** Es creen des de `develop`
 - **Destí:** Es mergejen a `main` i `develop`
 - **Vida:** **No s'esborren** (es manté l'històric de versions)
+- **Nomenclatura recomanada:** `release/vX.Y.Z`
 
 **Nomenclatura:**
 ```
@@ -155,6 +156,10 @@ release/2025-01
 - ✅ Actualització de versionat (package.json)
 - ✅ Documentació de release
 - ❌ NO features noves
+
+**Documentació de la versió (recomanat):**
+- Afegir nota de release a `docs/releases/vX.Y.Z.md`
+- Actualitzar `CHANGELOG.md` si existeix
 
 **Nota per agents:** L'agent només arriba fins al merge de `develop` a `release/*`. El merge i push a `main` el fa exclusivament l'usuari.
 

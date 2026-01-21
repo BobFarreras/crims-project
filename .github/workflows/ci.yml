@@ -47,8 +47,8 @@ jobs:
         cache: 'pnpm'
         cache-dependency-path: frontend/pnpm-lock.yaml
     
-    - name: Install pnpm
-      run: npm install -g pnpm
+    - name: Enable pnpm via corepack
+      run: corepack enable && corepack prepare pnpm@9.12.2 --activate
     
     - name: Install Dependencies
       run: pnpm install
