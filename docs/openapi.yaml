@@ -1,0 +1,631 @@
+openapi: 3.0.3
+info:
+  title: Crims de Mitjanit API
+  version: 1.0.1
+  description: |
+    OpenAPI specification for the backend REST API.
+    Used to document and interact with the API.
+servers:
+  - url: https://api.digitaistudios.com
+  - url: http://localhost:8080
+paths:
+  /api/v1/status:
+    get:
+      summary: Service status
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  system:
+                    type: string
+                  status:
+                    type: string
+                  version:
+                    type: string
+  /api/v1/health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: OK
+        "503":
+          description: PocketBase unavailable
+  /api/v1/metrics:
+    get:
+      summary: Basic metrics
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Metrics"
+
+  /api/v1/lobby/join:
+    post:
+      summary: Join game lobby
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LobbyJoin"
+      responses:
+        "201":
+          description: Player created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Player"
+
+  /api/v1/games:
+    post:
+      summary: Create game
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GameInput"
+      responses:
+        "201":
+          description: Game created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Game"
+  /api/v1/games/{id}:
+    get:
+      summary: Get game by id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Game"
+  /api/v1/games/by-code/{code}:
+    get:
+      summary: Get game by code
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Game"
+
+  /api/v1/players:
+    post:
+      summary: Create player
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlayerInput"
+      responses:
+        "201":
+          description: Player created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Player"
+  /api/v1/games/{id}/players:
+    get:
+      summary: List players by game
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Player"
+
+  /api/v1/events:
+    post:
+      summary: Create event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventInput"
+      responses:
+        "201":
+          description: Event created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+  /api/v1/games/{id}/events:
+    get:
+      summary: List events by game
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Event"
+
+  /api/v1/clues:
+    post:
+      summary: Create clue
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClueInput"
+      responses:
+        "201":
+          description: Clue created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Clue"
+  /api/v1/games/{id}/clues:
+    get:
+      summary: List clues by game
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Clue"
+
+  /api/v1/persons:
+    post:
+      summary: Create person
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PersonInput"
+      responses:
+        "201":
+          description: Person created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Person"
+  /api/v1/games/{id}/persons:
+    get:
+      summary: List persons by game
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Person"
+
+  /api/v1/hypotheses:
+    post:
+      summary: Create hypothesis
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HypothesisInput"
+      responses:
+        "201":
+          description: Hypothesis created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Hypothesis"
+  /api/v1/games/{id}/hypotheses:
+    get:
+      summary: List hypotheses by game
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Hypothesis"
+
+  /api/v1/accusations:
+    post:
+      summary: Create accusation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccusationInput"
+      responses:
+        "201":
+          description: Accusation created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Accusation"
+  /api/v1/games/{id}/accusations:
+    get:
+      summary: List accusations by game
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Accusation"
+
+  /api/v1/forensics:
+    post:
+      summary: Create forensic analysis
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ForensicInput"
+      responses:
+        "201":
+          description: Forensic created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Forensic"
+  /api/v1/games/{id}/forensics:
+    get:
+      summary: List forensics by game
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Forensic"
+
+  /api/v1/timeline:
+    post:
+      summary: Create timeline entry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TimelineInput"
+      responses:
+        "201":
+          description: Timeline entry created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimelineEntry"
+  /api/v1/games/{id}/timeline:
+    get:
+      summary: List timeline entries by game
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TimelineEntry"
+
+  /api/v1/interrogations:
+    post:
+      summary: Create interrogation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InterrogationInput"
+      responses:
+        "201":
+          description: Interrogation created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Interrogation"
+  /api/v1/games/{id}/interrogations:
+    get:
+      summary: List interrogations by game
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Interrogation"
+
+components:
+  schemas:
+    Metrics:
+      type: object
+      properties:
+        uptime_seconds:
+          type: integer
+    LobbyJoin:
+      type: object
+      required: [gameCode, userId, role]
+      properties:
+        gameCode:
+          type: string
+        userId:
+          type: string
+        role:
+          type: string
+    Game:
+      type: object
+      properties:
+        id: { type: string }
+        code: { type: string }
+        state: { type: string }
+        seed: { type: string }
+    GameInput:
+      type: object
+      required: [code, state, seed]
+      properties:
+        code: { type: string }
+        state: { type: string }
+        seed: { type: string }
+    Player:
+      type: object
+      properties:
+        id: { type: string }
+        gameId: { type: string }
+        userId: { type: string }
+        role: { type: string }
+        status: { type: string }
+        isHost: { type: boolean }
+    PlayerInput:
+      type: object
+      required: [gameId, userId, role, status]
+      properties:
+        gameId: { type: string }
+        userId: { type: string }
+        role: { type: string }
+        status: { type: string }
+        isHost: { type: boolean }
+    Event:
+      type: object
+      properties:
+        id: { type: string }
+        gameId: { type: string }
+        timestamp: { type: string }
+        locationId: { type: string }
+        participants:
+          type: array
+          items: { type: string }
+    EventInput:
+      type: object
+      required: [gameId, timestamp, locationId]
+      properties:
+        gameId: { type: string }
+        timestamp: { type: string }
+        locationId: { type: string }
+        participants:
+          type: array
+          items: { type: string }
+    Clue:
+      type: object
+      properties:
+        id: { type: string }
+        gameId: { type: string }
+        type: { type: string }
+        state: { type: string }
+        reliability: { type: integer }
+        facts: { type: object }
+    ClueInput:
+      type: object
+      required: [gameId, type, state, reliability]
+      properties:
+        gameId: { type: string }
+        type: { type: string }
+        state: { type: string }
+        reliability: { type: integer }
+        facts: { type: object }
+    Person:
+      type: object
+      properties:
+        id: { type: string }
+        gameId: { type: string }
+        name: { type: string }
+        officialStory: { type: string }
+        truthStory: { type: string }
+        stress: { type: integer }
+        credibility: { type: integer }
+    PersonInput:
+      type: object
+      required: [gameId, name, officialStory, truthStory, stress, credibility]
+      properties:
+        gameId: { type: string }
+        name: { type: string }
+        officialStory: { type: string }
+        truthStory: { type: string }
+        stress: { type: integer }
+        credibility: { type: integer }
+    Hypothesis:
+      type: object
+      properties:
+        id: { type: string }
+        gameId: { type: string }
+        title: { type: string }
+        strengthScore: { type: integer }
+        status: { type: string }
+        nodeIds:
+          type: array
+          items: { type: string }
+    HypothesisInput:
+      type: object
+      required: [gameId, title, strengthScore, status]
+      properties:
+        gameId: { type: string }
+        title: { type: string }
+        strengthScore: { type: integer }
+        status: { type: string }
+        nodeIds:
+          type: array
+          items: { type: string }
+    Accusation:
+      type: object
+      properties:
+        id: { type: string }
+        gameId: { type: string }
+        playerId: { type: string }
+        suspectId: { type: string }
+        motiveId: { type: string }
+        evidenceId: { type: string }
+        verdict: { type: string }
+    AccusationInput:
+      type: object
+      required: [gameId, playerId, suspectId, motiveId, evidenceId]
+      properties:
+        gameId: { type: string }
+        playerId: { type: string }
+        suspectId: { type: string }
+        motiveId: { type: string }
+        evidenceId: { type: string }
+        verdict: { type: string }
+    Forensic:
+      type: object
+      properties:
+        id: { type: string }
+        gameId: { type: string }
+        clueId: { type: string }
+        result: { type: string }
+        confidence: { type: integer }
+        status: { type: string }
+    ForensicInput:
+      type: object
+      required: [gameId, clueId, result, confidence, status]
+      properties:
+        gameId: { type: string }
+        clueId: { type: string }
+        result: { type: string }
+        confidence: { type: integer }
+        status: { type: string }
+    TimelineEntry:
+      type: object
+      properties:
+        id: { type: string }
+        gameId: { type: string }
+        timestamp: { type: string }
+        title: { type: string }
+        description: { type: string }
+        eventId: { type: string }
+    TimelineInput:
+      type: object
+      required: [gameId, timestamp, title, description]
+      properties:
+        gameId: { type: string }
+        timestamp: { type: string }
+        title: { type: string }
+        description: { type: string }
+        eventId: { type: string }
+    Interrogation:
+      type: object
+      properties:
+        id: { type: string }
+        gameId: { type: string }
+        personId: { type: string }
+        question: { type: string }
+        answer: { type: string }
+        tone: { type: string }
+    InterrogationInput:
+      type: object
+      required: [gameId, personId, question, answer, tone]
+      properties:
+        gameId: { type: string }
+        personId: { type: string }
+        question: { type: string }
+        answer: { type: string }
+        tone: { type: string }
