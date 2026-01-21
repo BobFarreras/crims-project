@@ -7,6 +7,7 @@ Afegir una capa de servei per orquestrar la logica de creacio i consulta de part
 - Servei `GameService` a `internal/services`.
 - Validacio basica d'inputs.
 - Delegacio a `ports.GameRepository`.
+- Els handlers HTTP han d'usar el servei (no repositori directe).
 
 ## Requeriments
 1. `CreateGame` valida `code`, `state`, `seed`.

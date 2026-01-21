@@ -18,6 +18,7 @@ import (
 	"github.com/digitaistudios/crims-backend/internal/middleware"
 	"github.com/digitaistudios/crims-backend/internal/platform/config"
 	"github.com/digitaistudios/crims-backend/internal/ports"
+	"github.com/digitaistudios/crims-backend/internal/services"
 
 	// 2. IMPORT INTERN (La teva utilitat web)
 	"github.com/digitaistudios/crims-backend/internal/platform/web"
@@ -53,6 +54,54 @@ func (d disabledGameRepository) GetGameByID(ctx context.Context, id string) (por
 
 func (d disabledGameRepository) GetGameByCode(ctx context.Context, code string) (ports.GameRecord, error) {
 	return ports.GameRecord{}, d.err
+}
+
+type disabledPlayerRepository struct {
+	err error
+}
+
+func (d disabledPlayerRepository) CreatePlayer(ctx context.Context, input ports.PlayerRecordInput) (ports.PlayerRecord, error) {
+	return ports.PlayerRecord{}, d.err
+}
+
+func (d disabledPlayerRepository) GetPlayerByID(ctx context.Context, id string) (ports.PlayerRecord, error) {
+	return ports.PlayerRecord{}, d.err
+}
+
+func (d disabledPlayerRepository) ListPlayersByGame(ctx context.Context, gameID string) ([]ports.PlayerRecord, error) {
+	return nil, d.err
+}
+
+type disabledEventRepository struct {
+	err error
+}
+
+func (d disabledEventRepository) CreateEvent(ctx context.Context, input ports.EventRecordInput) (ports.EventRecord, error) {
+	return ports.EventRecord{}, d.err
+}
+
+func (d disabledEventRepository) GetEventByID(ctx context.Context, id string) (ports.EventRecord, error) {
+	return ports.EventRecord{}, d.err
+}
+
+func (d disabledEventRepository) ListEventsByGame(ctx context.Context, gameID string) ([]ports.EventRecord, error) {
+	return nil, d.err
+}
+
+type disabledClueRepository struct {
+	err error
+}
+
+func (d disabledClueRepository) CreateClue(ctx context.Context, input ports.ClueRecordInput) (ports.ClueRecord, error) {
+	return ports.ClueRecord{}, d.err
+}
+
+func (d disabledClueRepository) GetClueByID(ctx context.Context, id string) (ports.ClueRecord, error) {
+	return ports.ClueRecord{}, d.err
+}
+
+func (d disabledClueRepository) ListCluesByGame(ctx context.Context, gameID string) ([]ports.ClueRecord, error) {
+	return nil, d.err
 }
 
 func main() {
@@ -105,6 +154,9 @@ func main() {
 
 	var pocketBaseClient ports.PocketBaseClient
 	var gameRepository ports.GameRepository
+	var playerRepository ports.PlayerRepository
+	var eventRepository ports.EventRepository
+	var clueRepository ports.ClueRepository
 	pbClient, pbErr := repo_pb.NewClient(repo_pb.Config{
 		BaseURL: cfg.PocketBaseURL,
 		Timeout: cfg.PocketBaseTimeout,
@@ -113,10 +165,21 @@ func main() {
 		logger.Warn("PocketBase client disabled", "error", pbErr)
 		pocketBaseClient = disabledPocketBaseClient{err: pbErr}
 		gameRepository = disabledGameRepository{err: pbErr}
+		playerRepository = disabledPlayerRepository{err: pbErr}
+		eventRepository = disabledEventRepository{err: pbErr}
+		clueRepository = disabledClueRepository{err: pbErr}
 	} else {
 		pocketBaseClient = pbClient
 		gameRepository = repo_pb.NewGameRepository(pbClient)
+		playerRepository = repo_pb.NewPlayerRepository(pbClient)
+		eventRepository = repo_pb.NewEventRepository(pbClient)
+		clueRepository = repo_pb.NewClueRepository(pbClient)
 	}
+
+	gameService := services.NewGameService(gameRepository)
+	playerService := services.NewPlayerService(playerRepository)
+	eventService := services.NewEventService(eventRepository)
+	clueService := services.NewClueService(clueRepository)
 
 	r := chi.NewRouter()
 
@@ -174,7 +237,10 @@ func main() {
 	})
 
 	r.Get("/api/health", apihttp.NewHealthHandler(pocketBaseClient))
-	apihttp.RegisterGameRoutes(r, gameRepository)
+	apihttp.RegisterGameRoutes(r, gameService)
+	apihttp.RegisterPlayerRoutes(r, playerService)
+	apihttp.RegisterEventRoutes(r, eventService)
+	apihttp.RegisterClueRoutes(r, clueService)
 
 	// ===============================
 	// DEBUG SENTRY CONFIGURATION

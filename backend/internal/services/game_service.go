@@ -17,6 +17,8 @@ type GameService struct {
 	repo ports.GameRepository
 }
 
+var _ ports.GameService = (*GameService)(nil)
+
 func NewGameService(repo ports.GameRepository) *GameService {
 	return &GameService{repo: repo}
 }
