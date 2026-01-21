@@ -18,6 +18,7 @@ import (
 	"github.com/digitaistudios/crims-backend/internal/middleware"
 	"github.com/digitaistudios/crims-backend/internal/platform/config"
 	"github.com/digitaistudios/crims-backend/internal/ports"
+	"github.com/digitaistudios/crims-backend/internal/services"
 
 	// 2. IMPORT INTERN (La teva utilitat web)
 	"github.com/digitaistudios/crims-backend/internal/platform/web"
@@ -118,6 +119,8 @@ func main() {
 		gameRepository = repo_pb.NewGameRepository(pbClient)
 	}
 
+	gameService := services.NewGameService(gameRepository)
+
 	r := chi.NewRouter()
 
 	// Middleware de Sentry (captura panics)
@@ -174,7 +177,7 @@ func main() {
 	})
 
 	r.Get("/api/health", apihttp.NewHealthHandler(pocketBaseClient))
-	apihttp.RegisterGameRoutes(r, gameRepository)
+	apihttp.RegisterGameRoutes(r, gameService)
 
 	// ===============================
 	// DEBUG SENTRY CONFIGURATION
