@@ -39,6 +39,22 @@ func (d disabledPocketBaseClient) Ping(ctx context.Context) error {
 	return d.err
 }
 
+type disabledGameRepository struct {
+	err error
+}
+
+func (d disabledGameRepository) CreateGame(ctx context.Context, input ports.GameRecordInput) (ports.GameRecord, error) {
+	return ports.GameRecord{}, d.err
+}
+
+func (d disabledGameRepository) GetGameByID(ctx context.Context, id string) (ports.GameRecord, error) {
+	return ports.GameRecord{}, d.err
+}
+
+func (d disabledGameRepository) GetGameByCode(ctx context.Context, code string) (ports.GameRecord, error) {
+	return ports.GameRecord{}, d.err
+}
+
 func main() {
 	// Carregar variables d'entorn des de .env.local (o .env)
 	// El fitxer ha d'estar a l'arrel del projecte (../ des de backend/)
@@ -88,6 +104,7 @@ func main() {
 	logger.Info("🔌 Inicialitzant Crims de Mitjanit Backend...")
 
 	var pocketBaseClient ports.PocketBaseClient
+	var gameRepository ports.GameRepository
 	pbClient, pbErr := repo_pb.NewClient(repo_pb.Config{
 		BaseURL: cfg.PocketBaseURL,
 		Timeout: cfg.PocketBaseTimeout,
@@ -95,8 +112,10 @@ func main() {
 	if pbErr != nil {
 		logger.Warn("PocketBase client disabled", "error", pbErr)
 		pocketBaseClient = disabledPocketBaseClient{err: pbErr}
+		gameRepository = disabledGameRepository{err: pbErr}
 	} else {
 		pocketBaseClient = pbClient
+		gameRepository = repo_pb.NewGameRepository(pbClient)
 	}
 
 	r := chi.NewRouter()
@@ -155,6 +174,7 @@ func main() {
 	})
 
 	r.Get("/api/health", apihttp.NewHealthHandler(pocketBaseClient))
+	apihttp.RegisterGameRoutes(r, gameRepository)
 
 	// ===============================
 	// DEBUG SENTRY CONFIGURATION
