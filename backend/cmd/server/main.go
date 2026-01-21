@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -12,7 +13,10 @@ import (
 	// 1. IMPORT INTERN (El teu codi)
 	// Li diem "myMiddleware" per no confondre'l amb el de Chi,
 	// o simplement usem el nom del paquet "middleware" si l'altre l'anomenem diferent.
+	apihttp "github.com/digitaistudios/crims-backend/internal/adapters/http"
+	"github.com/digitaistudios/crims-backend/internal/adapters/repo_pb"
 	"github.com/digitaistudios/crims-backend/internal/middleware"
+	"github.com/digitaistudios/crims-backend/internal/ports"
 
 	// 2. IMPORT INTERN (La teva utilitat web)
 	"github.com/digitaistudios/crims-backend/internal/platform/web"
@@ -25,6 +29,14 @@ import (
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 )
+
+type disabledPocketBaseClient struct {
+	err error
+}
+
+func (d disabledPocketBaseClient) Ping(ctx context.Context) error {
+	return d.err
+}
 
 func main() {
 	// Carregar variables d'entorn des de .env.local (o .env)
@@ -67,6 +79,18 @@ func main() {
 	// Ara "middleware" es refereix a la TEVA carpeta internal/middleware
 	logger := middleware.SetupLogger()
 	logger.Info("🔌 Inicialitzant Crims de Mitjanit Backend...")
+
+	var pocketBaseClient ports.PocketBaseClient
+	pbClient, pbErr := repo_pb.NewClient(repo_pb.Config{
+		BaseURL: os.Getenv("PB_URL"),
+		Timeout: 5 * time.Second,
+	})
+	if pbErr != nil {
+		logger.Warn("PocketBase client disabled", "error", pbErr)
+		pocketBaseClient = disabledPocketBaseClient{err: pbErr}
+	} else {
+		pocketBaseClient = pbClient
+	}
 
 	r := chi.NewRouter()
 
@@ -122,6 +146,8 @@ func main() {
 		}
 		web.RespondJSON(w, http.StatusOK, status)
 	})
+
+	r.Get("/api/health", apihttp.NewHealthHandler(pocketBaseClient))
 
 	// ===============================
 	// DEBUG SENTRY CONFIGURATION
