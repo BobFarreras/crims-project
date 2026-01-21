@@ -104,6 +104,22 @@ func (d disabledClueRepository) ListCluesByGame(ctx context.Context, gameID stri
 	return nil, d.err
 }
 
+type disabledPersonRepository struct {
+	err error
+}
+
+func (d disabledPersonRepository) CreatePerson(ctx context.Context, input ports.PersonRecordInput) (ports.PersonRecord, error) {
+	return ports.PersonRecord{}, d.err
+}
+
+func (d disabledPersonRepository) GetPersonByID(ctx context.Context, id string) (ports.PersonRecord, error) {
+	return ports.PersonRecord{}, d.err
+}
+
+func (d disabledPersonRepository) ListPersonsByGame(ctx context.Context, gameID string) ([]ports.PersonRecord, error) {
+	return nil, d.err
+}
+
 func main() {
 	// Carregar variables d'entorn des de .env.local (o .env)
 	// El fitxer ha d'estar a l'arrel del projecte (../ des de backend/)
@@ -157,6 +173,7 @@ func main() {
 	var playerRepository ports.PlayerRepository
 	var eventRepository ports.EventRepository
 	var clueRepository ports.ClueRepository
+	var personRepository ports.PersonRepository
 	pbClient, pbErr := repo_pb.NewClient(repo_pb.Config{
 		BaseURL: cfg.PocketBaseURL,
 		Timeout: cfg.PocketBaseTimeout,
@@ -168,18 +185,21 @@ func main() {
 		playerRepository = disabledPlayerRepository{err: pbErr}
 		eventRepository = disabledEventRepository{err: pbErr}
 		clueRepository = disabledClueRepository{err: pbErr}
+		personRepository = disabledPersonRepository{err: pbErr}
 	} else {
 		pocketBaseClient = pbClient
 		gameRepository = repo_pb.NewGameRepository(pbClient)
 		playerRepository = repo_pb.NewPlayerRepository(pbClient)
 		eventRepository = repo_pb.NewEventRepository(pbClient)
 		clueRepository = repo_pb.NewClueRepository(pbClient)
+		personRepository = repo_pb.NewPersonRepository(pbClient)
 	}
 
 	gameService := services.NewGameService(gameRepository)
 	playerService := services.NewPlayerService(playerRepository)
 	eventService := services.NewEventService(eventRepository)
 	clueService := services.NewClueService(clueRepository)
+	personService := services.NewPersonService(personRepository)
 
 	r := chi.NewRouter()
 
@@ -241,6 +261,7 @@ func main() {
 	apihttp.RegisterPlayerRoutes(r, playerService)
 	apihttp.RegisterEventRoutes(r, eventService)
 	apihttp.RegisterClueRoutes(r, clueService)
+	apihttp.RegisterPersonRoutes(r, personService)
 
 	// ===============================
 	// DEBUG SENTRY CONFIGURATION
