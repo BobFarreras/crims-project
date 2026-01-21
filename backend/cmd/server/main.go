@@ -56,6 +56,22 @@ func (d disabledGameRepository) GetGameByCode(ctx context.Context, code string) 
 	return ports.GameRecord{}, d.err
 }
 
+type disabledPlayerRepository struct {
+	err error
+}
+
+func (d disabledPlayerRepository) CreatePlayer(ctx context.Context, input ports.PlayerRecordInput) (ports.PlayerRecord, error) {
+	return ports.PlayerRecord{}, d.err
+}
+
+func (d disabledPlayerRepository) GetPlayerByID(ctx context.Context, id string) (ports.PlayerRecord, error) {
+	return ports.PlayerRecord{}, d.err
+}
+
+func (d disabledPlayerRepository) ListPlayersByGame(ctx context.Context, gameID string) ([]ports.PlayerRecord, error) {
+	return nil, d.err
+}
+
 func main() {
 	// Carregar variables d'entorn des de .env.local (o .env)
 	// El fitxer ha d'estar a l'arrel del projecte (../ des de backend/)
@@ -106,6 +122,7 @@ func main() {
 
 	var pocketBaseClient ports.PocketBaseClient
 	var gameRepository ports.GameRepository
+	var playerRepository ports.PlayerRepository
 	pbClient, pbErr := repo_pb.NewClient(repo_pb.Config{
 		BaseURL: cfg.PocketBaseURL,
 		Timeout: cfg.PocketBaseTimeout,
@@ -114,12 +131,15 @@ func main() {
 		logger.Warn("PocketBase client disabled", "error", pbErr)
 		pocketBaseClient = disabledPocketBaseClient{err: pbErr}
 		gameRepository = disabledGameRepository{err: pbErr}
+		playerRepository = disabledPlayerRepository{err: pbErr}
 	} else {
 		pocketBaseClient = pbClient
 		gameRepository = repo_pb.NewGameRepository(pbClient)
+		playerRepository = repo_pb.NewPlayerRepository(pbClient)
 	}
 
 	gameService := services.NewGameService(gameRepository)
+	playerService := services.NewPlayerService(playerRepository)
 
 	r := chi.NewRouter()
 
@@ -178,6 +198,7 @@ func main() {
 
 	r.Get("/api/health", apihttp.NewHealthHandler(pocketBaseClient))
 	apihttp.RegisterGameRoutes(r, gameService)
+	apihttp.RegisterPlayerRoutes(r, playerService)
 
 	// ===============================
 	// DEBUG SENTRY CONFIGURATION
