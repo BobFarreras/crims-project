@@ -136,6 +136,22 @@ func (d disabledHypothesisRepository) ListHypothesesByGame(ctx context.Context, 
 	return nil, d.err
 }
 
+type disabledAccusationRepository struct {
+	err error
+}
+
+func (d disabledAccusationRepository) CreateAccusation(ctx context.Context, input ports.AccusationRecordInput) (ports.AccusationRecord, error) {
+	return ports.AccusationRecord{}, d.err
+}
+
+func (d disabledAccusationRepository) GetAccusationByID(ctx context.Context, id string) (ports.AccusationRecord, error) {
+	return ports.AccusationRecord{}, d.err
+}
+
+func (d disabledAccusationRepository) ListAccusationsByGame(ctx context.Context, gameID string) ([]ports.AccusationRecord, error) {
+	return nil, d.err
+}
+
 func main() {
 	// Carregar variables d'entorn des de .env.local (o .env)
 	// El fitxer ha d'estar a l'arrel del projecte (../ des de backend/)
@@ -191,6 +207,7 @@ func main() {
 	var clueRepository ports.ClueRepository
 	var personRepository ports.PersonRepository
 	var hypothesisRepository ports.HypothesisRepository
+	var accusationRepository ports.AccusationRepository
 	pbClient, pbErr := repo_pb.NewClient(repo_pb.Config{
 		BaseURL: cfg.PocketBaseURL,
 		Timeout: cfg.PocketBaseTimeout,
@@ -204,6 +221,7 @@ func main() {
 		clueRepository = disabledClueRepository{err: pbErr}
 		personRepository = disabledPersonRepository{err: pbErr}
 		hypothesisRepository = disabledHypothesisRepository{err: pbErr}
+		accusationRepository = disabledAccusationRepository{err: pbErr}
 	} else {
 		pocketBaseClient = pbClient
 		gameRepository = repo_pb.NewGameRepository(pbClient)
@@ -212,6 +230,7 @@ func main() {
 		clueRepository = repo_pb.NewClueRepository(pbClient)
 		personRepository = repo_pb.NewPersonRepository(pbClient)
 		hypothesisRepository = repo_pb.NewHypothesisRepository(pbClient)
+		accusationRepository = repo_pb.NewAccusationRepository(pbClient)
 	}
 
 	gameService := services.NewGameService(gameRepository)
@@ -220,6 +239,7 @@ func main() {
 	clueService := services.NewClueService(clueRepository)
 	personService := services.NewPersonService(personRepository)
 	hypothesisService := services.NewHypothesisService(hypothesisRepository)
+	accusationService := services.NewAccusationService(accusationRepository)
 
 	r := chi.NewRouter()
 
@@ -283,6 +303,7 @@ func main() {
 	apihttp.RegisterClueRoutes(r, clueService)
 	apihttp.RegisterPersonRoutes(r, personService)
 	apihttp.RegisterHypothesisRoutes(r, hypothesisService)
+	apihttp.RegisterAccusationRoutes(r, accusationService)
 
 	// ===============================
 	// DEBUG SENTRY CONFIGURATION
