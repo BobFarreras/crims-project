@@ -178,6 +178,7 @@ Separació clara de responsabilitats:
 - [Game Mechanics](./docs/architecture/game-mechanics.md) - Mecàniques de joc
 - [Game Logic Engine](./docs/architecture/game-logic-engine.md) - Motor lògic
 - [Project Structure](./docs/architecture/project-structure.md) - Estructura detallada
+- [Project Phases](./docs/architecture/project-phases.md) - Guia pas a pas del roadmap
 - [Features](./docs/features/) - Especificacions de cada feature (TDD)
 
 ## 🔧 Desenvolupament
