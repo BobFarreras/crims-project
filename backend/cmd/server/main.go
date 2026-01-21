@@ -168,6 +168,22 @@ func (d disabledForensicRepository) ListAnalysesByGame(ctx context.Context, game
 	return nil, d.err
 }
 
+type disabledTimelineRepository struct {
+	err error
+}
+
+func (d disabledTimelineRepository) CreateEntry(ctx context.Context, input ports.TimelineRecordInput) (ports.TimelineRecord, error) {
+	return ports.TimelineRecord{}, d.err
+}
+
+func (d disabledTimelineRepository) GetEntryByID(ctx context.Context, id string) (ports.TimelineRecord, error) {
+	return ports.TimelineRecord{}, d.err
+}
+
+func (d disabledTimelineRepository) ListEntriesByGame(ctx context.Context, gameID string) ([]ports.TimelineRecord, error) {
+	return nil, d.err
+}
+
 func main() {
 	// Carregar variables d'entorn des de .env.local (o .env)
 	// El fitxer ha d'estar a l'arrel del projecte (../ des de backend/)
@@ -225,6 +241,7 @@ func main() {
 	var hypothesisRepository ports.HypothesisRepository
 	var accusationRepository ports.AccusationRepository
 	var forensicRepository ports.ForensicRepository
+	var timelineRepository ports.TimelineRepository
 	pbClient, pbErr := repo_pb.NewClient(repo_pb.Config{
 		BaseURL: cfg.PocketBaseURL,
 		Timeout: cfg.PocketBaseTimeout,
@@ -240,6 +257,7 @@ func main() {
 		hypothesisRepository = disabledHypothesisRepository{err: pbErr}
 		accusationRepository = disabledAccusationRepository{err: pbErr}
 		forensicRepository = disabledForensicRepository{err: pbErr}
+		timelineRepository = disabledTimelineRepository{err: pbErr}
 	} else {
 		pocketBaseClient = pbClient
 		gameRepository = repo_pb.NewGameRepository(pbClient)
@@ -250,6 +268,7 @@ func main() {
 		hypothesisRepository = repo_pb.NewHypothesisRepository(pbClient)
 		accusationRepository = repo_pb.NewAccusationRepository(pbClient)
 		forensicRepository = repo_pb.NewForensicRepository(pbClient)
+		timelineRepository = repo_pb.NewTimelineRepository(pbClient)
 	}
 
 	gameService := services.NewGameService(gameRepository)
@@ -260,6 +279,7 @@ func main() {
 	hypothesisService := services.NewHypothesisService(hypothesisRepository)
 	accusationService := services.NewAccusationService(accusationRepository)
 	forensicService := services.NewForensicService(forensicRepository)
+	timelineService := services.NewTimelineService(timelineRepository)
 
 	r := chi.NewRouter()
 
@@ -325,6 +345,7 @@ func main() {
 	apihttp.RegisterHypothesisRoutes(r, hypothesisService)
 	apihttp.RegisterAccusationRoutes(r, accusationService)
 	apihttp.RegisterForensicRoutes(r, forensicService)
+	apihttp.RegisterTimelineRoutes(r, timelineService)
 
 	// ===============================
 	// DEBUG SENTRY CONFIGURATION
