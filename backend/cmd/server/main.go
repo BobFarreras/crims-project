@@ -259,6 +259,7 @@ func main() {
 	var forensicRepository ports.ForensicRepository
 	var timelineRepository ports.TimelineRepository
 	var interrogationRepository ports.InterrogationRepository
+	var lobbyService ports.LobbyService
 	pbClient, pbErr := repo_pb.NewClient(repo_pb.Config{
 		BaseURL: cfg.PocketBaseURL,
 		Timeout: cfg.PocketBaseTimeout,
@@ -300,6 +301,7 @@ func main() {
 	forensicService := services.NewForensicService(forensicRepository)
 	timelineService := services.NewTimelineService(timelineRepository)
 	interrogationService := services.NewInterrogationService(interrogationRepository)
+	lobbyService = services.NewLobbyService(gameRepository, playerRepository)
 
 	r := chi.NewRouter()
 
@@ -367,6 +369,7 @@ func main() {
 	apihttp.RegisterForensicRoutes(r, forensicService)
 	apihttp.RegisterTimelineRoutes(r, timelineService)
 	apihttp.RegisterInterrogationRoutes(r, interrogationService)
+	apihttp.RegisterLobbyRoutes(r, lobbyService)
 
 	// ===============================
 	// DEBUG SENTRY CONFIGURATION
