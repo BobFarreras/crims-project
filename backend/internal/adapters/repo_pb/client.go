@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/digitaistudios/crims-backend/internal/ports"
 )
 
 var (
@@ -22,6 +24,8 @@ type Client struct {
 	baseURL    string
 	httpClient *http.Client
 }
+
+var _ ports.PocketBaseClient = (*Client)(nil)
 
 func NewClient(cfg Config) (*Client, error) {
 	if cfg.BaseURL == "" {
