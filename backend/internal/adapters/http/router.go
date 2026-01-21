@@ -15,6 +15,10 @@ func RegisterAPIV1Routes(r chi.Router, register func(r chi.Router)) {
 	})
 }
 
+func RegisterMetricsRoutes(r chi.Router) {
+	r.Get("/metrics", NewMetricsHandler())
+}
+
 // RegisterGameRoutes defineix les rutes de Game.
 func RegisterGameRoutes(r chi.Router, service ports.GameService) {
 	r.Post("/api/games", NewCreateGameHandler(service))
