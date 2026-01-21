@@ -11,7 +11,7 @@ Sentry.init({
   tracesSampleRate: 0.05, // 5% de traces
 
   // Before Send (filtre errors)
-  beforeSend(event, hint) {
+  beforeSend(event) {
     // PERMITIR ENVIAR ERRORS EN DEVELOPMENT PER FER TESTS
     // Comentat temporalment per verificar que funciona
     // if (process.env.NODE_ENV === "development") {

@@ -19,7 +19,7 @@ Sentry.init({
   ],
 
   // Before Send (filtre errors)
-  beforeSend(event, hint) {
+  beforeSend(event) {
     // PERMITIR ENVIAR ERRORS EN DEVELOPMENT PER FER TESTS
     // Comentat temporalment per verificar que funciona
     // if (process.env.ENVIRONMENT === "development") {
