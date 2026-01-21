@@ -184,6 +184,22 @@ func (d disabledTimelineRepository) ListEntriesByGame(ctx context.Context, gameI
 	return nil, d.err
 }
 
+type disabledInterrogationRepository struct {
+	err error
+}
+
+func (d disabledInterrogationRepository) CreateInterrogation(ctx context.Context, input ports.InterrogationRecordInput) (ports.InterrogationRecord, error) {
+	return ports.InterrogationRecord{}, d.err
+}
+
+func (d disabledInterrogationRepository) GetInterrogationByID(ctx context.Context, id string) (ports.InterrogationRecord, error) {
+	return ports.InterrogationRecord{}, d.err
+}
+
+func (d disabledInterrogationRepository) ListInterrogationsByGame(ctx context.Context, gameID string) ([]ports.InterrogationRecord, error) {
+	return nil, d.err
+}
+
 func main() {
 	// Carregar variables d'entorn des de .env.local (o .env)
 	// El fitxer ha d'estar a l'arrel del projecte (../ des de backend/)
@@ -242,6 +258,7 @@ func main() {
 	var accusationRepository ports.AccusationRepository
 	var forensicRepository ports.ForensicRepository
 	var timelineRepository ports.TimelineRepository
+	var interrogationRepository ports.InterrogationRepository
 	pbClient, pbErr := repo_pb.NewClient(repo_pb.Config{
 		BaseURL: cfg.PocketBaseURL,
 		Timeout: cfg.PocketBaseTimeout,
@@ -258,6 +275,7 @@ func main() {
 		accusationRepository = disabledAccusationRepository{err: pbErr}
 		forensicRepository = disabledForensicRepository{err: pbErr}
 		timelineRepository = disabledTimelineRepository{err: pbErr}
+		interrogationRepository = disabledInterrogationRepository{err: pbErr}
 	} else {
 		pocketBaseClient = pbClient
 		gameRepository = repo_pb.NewGameRepository(pbClient)
@@ -269,6 +287,7 @@ func main() {
 		accusationRepository = repo_pb.NewAccusationRepository(pbClient)
 		forensicRepository = repo_pb.NewForensicRepository(pbClient)
 		timelineRepository = repo_pb.NewTimelineRepository(pbClient)
+		interrogationRepository = repo_pb.NewInterrogationRepository(pbClient)
 	}
 
 	gameService := services.NewGameService(gameRepository)
@@ -280,6 +299,7 @@ func main() {
 	accusationService := services.NewAccusationService(accusationRepository)
 	forensicService := services.NewForensicService(forensicRepository)
 	timelineService := services.NewTimelineService(timelineRepository)
+	interrogationService := services.NewInterrogationService(interrogationRepository)
 
 	r := chi.NewRouter()
 
@@ -346,6 +366,7 @@ func main() {
 	apihttp.RegisterAccusationRoutes(r, accusationService)
 	apihttp.RegisterForensicRoutes(r, forensicService)
 	apihttp.RegisterTimelineRoutes(r, timelineService)
+	apihttp.RegisterInterrogationRoutes(r, interrogationService)
 
 	// ===============================
 	// DEBUG SENTRY CONFIGURATION
