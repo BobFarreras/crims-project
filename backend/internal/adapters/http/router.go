@@ -8,6 +8,13 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+// RegisterAPIV1Routes encapsula totes les rutes a /api/v1.
+func RegisterAPIV1Routes(r chi.Router, register func(r chi.Router)) {
+	r.Route("/api/v1", func(r chi.Router) {
+		register(r)
+	})
+}
+
 // RegisterGameRoutes defineix les rutes de Game.
 func RegisterGameRoutes(r chi.Router, service ports.GameService) {
 	r.Post("/api/games", NewCreateGameHandler(service))
