@@ -16,6 +16,7 @@ import (
 	apihttp "github.com/digitaistudios/crims-backend/internal/adapters/http"
 	"github.com/digitaistudios/crims-backend/internal/adapters/repo_pb"
 	"github.com/digitaistudios/crims-backend/internal/middleware"
+	"github.com/digitaistudios/crims-backend/internal/platform/config"
 	"github.com/digitaistudios/crims-backend/internal/ports"
 
 	// 2. IMPORT INTERN (La teva utilitat web)
@@ -55,10 +56,16 @@ func main() {
 		log.Println("✅ Carregat .env.local (a l'arrel del projecte)")
 	}
 
+	// Carregar configuracio
+	cfg, cfgErr := config.Load()
+	if cfgErr != nil {
+		log.Fatalf("❌ Error configuracio: %v", cfgErr)
+	}
+
 	// Inicialitzar Sentry per error tracking
 	sentryErr := sentry.Init(sentry.ClientOptions{
 		Dsn:         os.Getenv("SENTRY_DSN"),
-		Environment: os.Getenv("ENVIRONMENT"),
+		Environment: cfg.Environment,
 		// Sample Rate (10% de traces)
 		TracesSampleRate: 0.1,
 	})
@@ -82,8 +89,8 @@ func main() {
 
 	var pocketBaseClient ports.PocketBaseClient
 	pbClient, pbErr := repo_pb.NewClient(repo_pb.Config{
-		BaseURL: os.Getenv("PB_URL"),
-		Timeout: 5 * time.Second,
+		BaseURL: cfg.PocketBaseURL,
+		Timeout: cfg.PocketBaseTimeout,
 	})
 	if pbErr != nil {
 		logger.Warn("PocketBase client disabled", "error", pbErr)
@@ -248,10 +255,9 @@ func main() {
 		})
 	})
 
-	port := "8080"
-	logger.Info("🚀 Servidor escoltant", "port", port, "url", "http://localhost:"+port)
+	logger.Info("🚀 Servidor escoltant", "port", cfg.Port, "url", "http://localhost:"+cfg.Port)
 
-	listenErr := http.ListenAndServe(":"+port, r)
+	listenErr := http.ListenAndServe(":"+cfg.Port, r)
 	if listenErr != nil {
 		logger.Error("❌ Error fatal al servidor", "error", listenErr)
 		os.Exit(1)
