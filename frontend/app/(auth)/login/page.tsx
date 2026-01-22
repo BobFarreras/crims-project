@@ -25,7 +25,7 @@ export default function LoginPage() {
 
         {/* El component UI rep la funció del hook */}
         <LoginForm 
-          onSubmit={({ username, password }) => login(username, password)}
+          onSubmit={({ email, password }) => login(email, password)}
           // Si el teu LoginForm suporta loading visual, passa-li aquí:
           // isLoading={isLoading} 
         />

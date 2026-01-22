@@ -10,12 +10,19 @@ import (
 )
 
 type AuthHandler struct {
-	pbClient ports.PocketBaseClient
+	pbClient     ports.PocketBaseClient
+	cookieConfig AuthCookieConfig
 }
 
-func NewAuthHandler(pbClient ports.PocketBaseClient) *AuthHandler {
+type AuthCookieConfig struct {
+	Secure   bool
+	SameSite http.SameSite
+}
+
+func NewAuthHandler(pbClient ports.PocketBaseClient, cookieConfig AuthCookieConfig) *AuthHandler {
 	return &AuthHandler{
-		pbClient: pbClient,
+		pbClient:     pbClient,
+		cookieConfig: cookieConfig,
 	}
 }
 
@@ -55,7 +62,7 @@ func (h *AuthHandler) HandleRegister(w http.ResponseWriter, r *http.Request) {
 }
 
 type LoginRequest struct {
-	Username string `json:"username"`
+	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
@@ -65,9 +72,9 @@ func (h *AuthHandler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 		web.RespondError(w, http.StatusBadRequest, "invalid request body", "auth/bad_request")
 		return
 	}
-	fmt.Printf("🔍 LOGIN INTENT: User='%s' Pass='%s'\n", req.Username, req.Password)
+	fmt.Printf("🔍 LOGIN INTENT: Email='%s'\n", req.Email)
 	// Crida a PocketBase
-	authResp, err := h.pbClient.AuthWithPassword(req.Username, req.Password)
+	authResp, err := h.pbClient.AuthWithPassword(req.Email, req.Password)
 	if err != nil {
 		web.RespondError(w, http.StatusUnauthorized, "invalid credentials", "auth/invalid_credentials")
 		return
@@ -80,12 +87,12 @@ func (h *AuthHandler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 		Path:  "/",            // Disponible a tota l'app
 
 		// 🛡️ SEGURETAT MÀXIMA
-		HttpOnly: true,                 // JS no la pot llegir (Anti-XSS)
-		SameSite: http.SameSiteLaxMode, // Protecció CSRF bàsica
+		HttpOnly: true, // JS no la pot llegir (Anti-XSS)
+		SameSite: h.cookieConfig.SameSite,
 
 		// ⚠️ EN PRODUCCIÓ: Posa Secure: true (només HTTPS).
 		// En localhost (HTTP), ha de ser false o el navegador la bloquejarà.
-		Secure: false,
+		Secure: h.cookieConfig.Secure,
 
 		MaxAge: 7 * 24 * 60 * 60, // 7 dies (en segons)
 	})
@@ -93,6 +100,41 @@ func (h *AuthHandler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	// Resposta JSON neta (sense token visible)
 	response := map[string]interface{}{
 		"message": "Login successful",
+		"user": map[string]string{
+			"id":       authResp.Record.ID,
+			"username": authResp.Record.Username,
+			"name":     authResp.Record.Name,
+		},
+	}
+
+	web.RespondJSON(w, http.StatusOK, response)
+}
+
+// HandleSession valida la sessio i retorna l'usuari autenticat
+func (h *AuthHandler) HandleSession(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("auth_token")
+	if err != nil || cookie.Value == "" {
+		web.RespondError(w, http.StatusUnauthorized, "missing session", "auth/missing_session")
+		return
+	}
+
+	authResp, err := h.pbClient.RefreshAuth(cookie.Value)
+	if err != nil {
+		web.RespondError(w, http.StatusUnauthorized, "invalid session", "auth/invalid_session")
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "auth_token",
+		Value:    authResp.Token,
+		Path:     "/",
+		HttpOnly: true,
+		SameSite: h.cookieConfig.SameSite,
+		Secure:   h.cookieConfig.Secure,
+		MaxAge:   7 * 24 * 60 * 60,
+	})
+
+	response := map[string]interface{}{
 		"user": map[string]string{
 			"id":       authResp.Record.ID,
 			"username": authResp.Record.Username,
@@ -111,9 +153,9 @@ func (h *AuthHandler) HandleLogout(w http.ResponseWriter, r *http.Request) {
 		Value:    "",  // Valor buit
 		Path:     "/", // Ha de coincidir amb el Path original!
 		HttpOnly: true,
-		SameSite: http.SameSiteLaxMode,
-		Secure:   false, // Recorda: true en producció (HTTPS)
-		MaxAge:   -1,    // 💀 Aixo mata la cookie a l'instant
+		SameSite: h.cookieConfig.SameSite,
+		Secure:   h.cookieConfig.Secure, // Recorda: true en producció (HTTPS)
+		MaxAge:   -1,                    // 💀 Aixo mata la cookie a l'instant
 	})
 
 	web.RespondJSON(w, http.StatusOK, map[string]string{"message": "Logged out successfully"})

@@ -30,6 +30,10 @@ func (f fakePocketBaseClient) AuthWithPassword(identity, password string) (*port
 	return nil, f.err
 }
 
+func (f fakePocketBaseClient) RefreshAuth(token string) (*ports.AuthResponse, error) {
+	return nil, f.err
+}
+
 func TestHealthHandler_OK(t *testing.T) {
 	handler := NewHealthHandler(fakePocketBaseClient{})
 

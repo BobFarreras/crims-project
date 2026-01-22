@@ -1,24 +1,28 @@
 import { render, screen, fireEvent } from '@testing-library/react'
-import { describe, it, expect, vi } from 'vitest'
-import LoginForm from './LoginForm'
+import LoginForm from '../components/LoginForm'
+import { vi } from 'vitest'
 
 describe('LoginForm', () => {
-  it('renders username and password fields and login button', () => {
+  it('renders email and password fields and login button', () => {
     render(<LoginForm onSubmit={() => {}} />)
 
-    expect(screen.getByLabelText(/username/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument()
+    expect(screen.getByLabelText(/Email/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/Contrasenya/i, { selector: 'input' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Entrar al Cas/i })).toBeInTheDocument()
   })
 
   it('submits values (basic)', () => {
     const onSubmit = vi.fn()
     render(<LoginForm onSubmit={onSubmit} />)
 
-    fireEvent.change(screen.getByLabelText(/username/i), { target: { value: 'Alice' } })
-    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'secret' } })
-    fireEvent.click(screen.getByRole('button', { name: /login/i }))
+    fireEvent.change(screen.getByLabelText(/Email/i), { target: { value: 'alice@example.com' } })
+    fireEvent.change(screen.getByLabelText(/Contrasenya/i, { selector: 'input' }), { target: { value: 'secret' } })
+    
+    fireEvent.click(screen.getByRole('button', { name: /Entrar al Cas/i }))
 
-    expect(onSubmit).toHaveBeenCalled()
+    expect(onSubmit).toHaveBeenCalledWith({
+      email: 'alice@example.com',
+      password: 'secret'
+    })
   })
 })

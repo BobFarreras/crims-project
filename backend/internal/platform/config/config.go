@@ -1,17 +1,20 @@
 package config
 
 import (
+	"net/http"
 	"os"
 	"strings"
 	"time"
 )
 
 type Config struct {
-	Port              string
-	Environment       string
-	PocketBaseURL     string
-	PocketBaseTimeout time.Duration
-	AllowedOrigins    []string // NOVA CONFIGURACIÓ
+	Port               string
+	Environment        string
+	PocketBaseURL      string
+	PocketBaseTimeout  time.Duration
+	AllowedOrigins     []string // NOVA CONFIGURACIÓ
+	AuthCookieSecure   bool
+	AuthCookieSameSite http.SameSite
 }
 
 func Load() (Config, error) {
@@ -20,11 +23,13 @@ func Load() (Config, error) {
 	allowedOrigins := strings.Split(rawOrigins, ",")
 
 	config := Config{
-		Port:              getEnvDefault("PORT", "8080"),
-		Environment:       getEnvDefault("ENVIRONMENT", "development"),
-		PocketBaseURL:     os.Getenv("PB_URL"),
-		PocketBaseTimeout: 5 * time.Second,
-		AllowedOrigins:    allowedOrigins,
+		Port:               getEnvDefault("PORT", "8080"),
+		Environment:        getEnvDefault("ENVIRONMENT", "development"),
+		PocketBaseURL:      os.Getenv("PB_URL"),
+		PocketBaseTimeout:  5 * time.Second,
+		AllowedOrigins:     allowedOrigins,
+		AuthCookieSecure:   getEnvDefault("ENVIRONMENT", "development") == "production",
+		AuthCookieSameSite: parseSameSite(getEnvDefault("AUTH_COOKIE_SAMESITE", "lax")),
 	}
 
 	if rawTimeout := os.Getenv("PB_TIMEOUT"); rawTimeout != "" {
@@ -44,4 +49,15 @@ func getEnvDefault(key, fallback string) string {
 		return fallback
 	}
 	return value
+}
+
+func parseSameSite(value string) http.SameSite {
+	switch strings.ToLower(strings.TrimSpace(value)) {
+	case "none":
+		return http.SameSiteNoneMode
+	case "strict":
+		return http.SameSiteStrictMode
+	default:
+		return http.SameSiteLaxMode
+	}
 }

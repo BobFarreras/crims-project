@@ -155,3 +155,30 @@ func (c *Client) AuthWithPassword(identity, password string) (*ports.AuthRespons
 
 	return &authResp, nil
 }
+
+func (c *Client) RefreshAuth(token string) (*ports.AuthResponse, error) {
+	targetURL := c.baseURL + "/api/collections/users/auth-refresh"
+
+	req, err := http.NewRequest(http.MethodPost, targetURL, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Authorization", "Bearer "+token)
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		return nil, fmt.Errorf("refresh failed with status: %d", resp.StatusCode)
+	}
+
+	var authResp ports.AuthResponse
+	if err := json.NewDecoder(resp.Body).Decode(&authResp); err != nil {
+		return nil, fmt.Errorf("failed to decode response: %w", err)
+	}
+
+	return &authResp, nil
+}

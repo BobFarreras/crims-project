@@ -7,10 +7,10 @@ export function useLogin() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const login = async (username: string, password: string) => {
+  const login = async (email: string, password: string) => {
     // 🛡️ Protecció contra 'undefined'
-    if (!username || !password) {
-      console.error("❌ Error: Dades incompletes al useLogin", { username, password });
+    if (!email || !password) {
+      console.error("❌ Error: Dades incompletes al useLogin", { email, password });
       setError("Error intern: Falten dades. Refresca la pàgina.");
       return;
     }
@@ -20,9 +20,9 @@ export function useLogin() {
     
     try {
       // Debug per veure que arriba bé
-      console.log("🚀 Fent login amb:", { user: username, passLength: password.length });
+      console.log("🚀 Fent login amb:", { email, passLength: password.length });
       
-      await authService.login(username, password);
+      await authService.login(email, password);
       
       router.push('/game/dashboard');
     } catch (err) {

@@ -4,7 +4,7 @@ import { Eye, EyeOff, LogIn } from 'lucide-react';
 
 // ✅ CANVI: Ara esperem un objecte (igual que a RegisterForm)
 type LoginFormData = {
-  username: string;
+  email: string;
   password: string;
 };
 
@@ -14,14 +14,14 @@ type Props = {
 };
 
 export default function LoginForm({ onSubmit, isLoading }: Props) {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // ✅ CANVI: Enviem un objecte compacte
-    onSubmit({ username, password });
+    onSubmit({ email, password });
   };
 
   return (
@@ -29,16 +29,17 @@ export default function LoginForm({ onSubmit, isLoading }: Props) {
       
       {/* USERNAME */}
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-bold uppercase tracking-wider text-zinc-500" htmlFor="username">
-          Usuari o Email
+        <label className="text-xs font-bold uppercase tracking-wider text-zinc-500" htmlFor="email">
+          Email
         </label>
         <input 
-          id="username"
-          name="username" 
-          value={username} 
-          onChange={(e) => setUsername(e.target.value)} 
+          id="email"
+          name="email"
+          type="email"
+          value={email} 
+          onChange={(e) => setEmail(e.target.value)} 
           className="h-12 rounded-xl border border-zinc-200 bg-zinc-50 px-4 transition focus:border-amber-500 focus:bg-white focus:outline-none" 
-          placeholder="detective_boby"
+          placeholder="detective@crims.cat"
           required 
         />
       </div>
