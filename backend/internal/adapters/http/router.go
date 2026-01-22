@@ -20,6 +20,7 @@ func RegisterAuthRoutes(r chi.Router, handler *AuthHandler) {
 	r.Route("/api/auth", func(r chi.Router) {
 		r.Post("/register", handler.HandleRegister)
 		r.Post("/login", handler.HandleLogin)
+		r.Post("/logout", handler.HandleLogout)
 	})
 }
 

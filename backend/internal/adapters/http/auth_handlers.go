@@ -102,3 +102,19 @@ func (h *AuthHandler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 
 	web.RespondJSON(w, http.StatusOK, response)
 }
+
+// HandleLogout tanca la sessió invalidant la cookie
+func (h *AuthHandler) HandleLogout(w http.ResponseWriter, r *http.Request) {
+	// 🔥 TÈCNICA SEGURA: Sobreescriure la cookie amb caducitat immediata
+	http.SetCookie(w, &http.Cookie{
+		Name:     "auth_token",
+		Value:    "",  // Valor buit
+		Path:     "/", // Ha de coincidir amb el Path original!
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+		Secure:   false, // Recorda: true en producció (HTTPS)
+		MaxAge:   -1,    // 💀 Aixo mata la cookie a l'instant
+	})
+
+	web.RespondJSON(w, http.StatusOK, map[string]string{"message": "Logged out successfully"})
+}

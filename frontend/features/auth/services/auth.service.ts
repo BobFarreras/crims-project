@@ -53,6 +53,18 @@ export const authService = {
     }
 
     return await res.json();
+  },
+
+  /**
+   * Tanca la sessió esborrant la cookie al servidor
+   */
+  async logout() {
+    await fetch(`${API_URL}/api/auth/logout`, {
+      method: 'POST', // Sempre POST per evitar que un simple enllaç et tanqui la sessió
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include', // 🔥 IMPRESCINDIBLE per enviar/rebre cookies
+    });
+    // No cal retornar res, si no falla, assumim que estem fora.
   }
 
 
