@@ -31,6 +31,9 @@ func (d disabledPocketBaseClient) Ping(ctx context.Context) error { return d.err
 func (d disabledPocketBaseClient) CreateUser(username, email, password, passwordConfirm, name string) error {
 	return d.err
 } // NOU MÈTODE
+func (d disabledPocketBaseClient) AuthWithPassword(identity, password string) (*ports.AuthResponse, error) {
+	return nil, d.err
+}
 
 type disabledGameRepository struct{ err error }
 

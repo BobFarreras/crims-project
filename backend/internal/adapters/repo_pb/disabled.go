@@ -179,3 +179,8 @@ func (d DisabledInterrogationRepository) ListInterrogationsByGame(ctx context.Co
 func (d DisabledPocketBaseClient) CreateUser(username, email, password, passwordConfirm, name string) error {
 	return d.Err
 }
+
+// Afegeix aquest mètode a disabled.go
+func (d DisabledPocketBaseClient) AuthWithPassword(identity, password string) (*ports.AuthResponse, error) {
+	return nil, d.Err
+}

@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/digitaistudios/crims-backend/internal/platform/web"
@@ -53,7 +54,38 @@ func (h *AuthHandler) HandleRegister(w http.ResponseWriter, r *http.Request) {
 	web.RespondJSON(w, http.StatusOK, map[string]string{"message": "User registered successfully"})
 }
 
+type LoginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
 func (h *AuthHandler) HandleLogin(w http.ResponseWriter, r *http.Request) {
-	// Implementació futura
-	web.RespondJSON(w, http.StatusOK, map[string]string{"token": "fake-jwt-token"})
+	var req LoginRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		web.RespondError(w, http.StatusBadRequest, "invalid request body", "auth/bad_request")
+		return
+	}
+	fmt.Printf("🔍 LOGIN INTENT: User='%s' Pass='%s'\n", req.Username, req.Password)
+	// 🔥 CRIDA REAL A POCKETBASE
+	authResp, err := h.pbClient.AuthWithPassword(req.Username, req.Password)
+	if err != nil {
+		// Log intern per debug
+		// LOG 2: Quin error EXACTE ens torna PocketBase?
+		fmt.Println("❌ ERROR REAL DE POCKETBASE:", err)
+		// Retornem 401 Unauthorized (més segur que 400 per logins)
+		web.RespondError(w, http.StatusUnauthorized, "invalid credentials", "auth/invalid_credentials")
+		return
+	}
+
+	// Retornem el token real i dades bàsiques
+	response := map[string]interface{}{
+		"token": authResp.Token,
+		"user": map[string]string{
+			"id":       authResp.Record.ID,
+			"username": authResp.Record.Username,
+			"name":     authResp.Record.Name,
+		},
+	}
+
+	web.RespondJSON(w, http.StatusOK, response)
 }

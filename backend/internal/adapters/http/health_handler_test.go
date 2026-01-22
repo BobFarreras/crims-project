@@ -8,7 +8,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	// 🔥 ASSEGURA'T QUE TENS AQUEST IMPORT!
 	"github.com/digitaistudios/crims-backend/internal/platform/web"
+	"github.com/digitaistudios/crims-backend/internal/ports"
 )
 
 type fakePocketBaseClient struct {
@@ -19,9 +21,13 @@ func (f fakePocketBaseClient) Ping(ctx context.Context) error {
 	return f.err
 }
 
-// AFEGEIX AQUEST MÈTODE NOU PER SATISFER LA INTERFÍCIE
 func (f fakePocketBaseClient) CreateUser(username, email, password, passwordConfirm, name string) error {
 	return f.err
+}
+
+// 🔥 AFEGEIX AQUEST MÈTODE QUE FALTAVA (I usa ports.AuthResponse)
+func (f fakePocketBaseClient) AuthWithPassword(identity, password string) (*ports.AuthResponse, error) {
+	return nil, f.err
 }
 
 func TestHealthHandler_OK(t *testing.T) {
