@@ -66,20 +66,33 @@ func (h *AuthHandler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Printf("🔍 LOGIN INTENT: User='%s' Pass='%s'\n", req.Username, req.Password)
-	// 🔥 CRIDA REAL A POCKETBASE
+	// Crida a PocketBase
 	authResp, err := h.pbClient.AuthWithPassword(req.Username, req.Password)
 	if err != nil {
-		// Log intern per debug
-		// LOG 2: Quin error EXACTE ens torna PocketBase?
-		fmt.Println("❌ ERROR REAL DE POCKETBASE:", err)
-		// Retornem 401 Unauthorized (més segur que 400 per logins)
 		web.RespondError(w, http.StatusUnauthorized, "invalid credentials", "auth/invalid_credentials")
 		return
 	}
 
-	// Retornem el token real i dades bàsiques
+	// 🔥 IMPLEMENTACIÓ COOKIE SEGURA (OWASP)
+	http.SetCookie(w, &http.Cookie{
+		Name:  "auth_token",   // Nom de la cookie
+		Value: authResp.Token, // El token JWT
+		Path:  "/",            // Disponible a tota l'app
+
+		// 🛡️ SEGURETAT MÀXIMA
+		HttpOnly: true,                 // JS no la pot llegir (Anti-XSS)
+		SameSite: http.SameSiteLaxMode, // Protecció CSRF bàsica
+
+		// ⚠️ EN PRODUCCIÓ: Posa Secure: true (només HTTPS).
+		// En localhost (HTTP), ha de ser false o el navegador la bloquejarà.
+		Secure: false,
+
+		MaxAge: 7 * 24 * 60 * 60, // 7 dies (en segons)
+	})
+
+	// Resposta JSON neta (sense token visible)
 	response := map[string]interface{}{
-		"token": authResp.Token,
+		"message": "Login successful",
 		"user": map[string]string{
 			"id":       authResp.Record.ID,
 			"username": authResp.Record.Username,

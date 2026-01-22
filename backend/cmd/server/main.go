@@ -260,11 +260,15 @@ func main() {
 	r.Use(sentryhttp.New(sentryhttp.Options{Repanic: true}).Handle)
 	r.Use(chimiddleware.Recoverer)
 	r.Use(middleware.RequestLogger(logger))
+	// 🔥 CONFIGURACIÓ CORS ESTRICTA (Necessària per Cookies)
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   cfg.AllowedOrigins,
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
-		ExposedHeaders:   []string{"Link"},
+		// ⚠️ IMPORTANT: No pots posar "*" si fas servir AllowCredentials.
+		// Has de posar l'origen exacte del Frontend.
+		AllowedOrigins: []string{"http://localhost:3000"},
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders: []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders: []string{"Link"},
+		// ✅ Aquesta línia permet que les cookies viatgin
 		AllowCredentials: true,
 		MaxAge:           300,
 	}))

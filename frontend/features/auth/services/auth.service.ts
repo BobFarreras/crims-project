@@ -16,19 +16,19 @@ export const authService = {
   /**
    * Realitza la petició de login al backend
    */
-  async login(username: string, password: string) {
-    // Validació extra de seguretat abans d'enviar
-    if (!username || !password) throw new Error("Falten dades");
-
+  async login(username: string, password: string): Promise<LoginResponse> {
     const res = await fetch(`${API_URL}/api/auth/login`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }), // Aquí es crea el JSON correcte
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      // 🔥 CLAU: Permet l'intercanvi de cookies HttpOnly
+      credentials: 'include',
+      body: JSON.stringify({ username, password }),
     });
 
     if (!res.ok) {
-      // Si el backend torna 401, llancem error
-      throw new Error('Credencials invàlides');
+      throw new Error('Credencials incorrectes o error del servidor');
     }
 
     return await res.json();
