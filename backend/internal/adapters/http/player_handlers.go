@@ -11,11 +11,11 @@ import (
 )
 
 type createPlayerRequest struct {
-	GameID string `json:"gameId"`
-	UserID string `json:"userId"`
-	Role   string `json:"role"`
-	Status string `json:"status"`
-	IsHost bool   `json:"isHost"`
+	GameID       string   `json:"gameId"`
+	UserID       string   `json:"userId"`
+	Capabilities []string `json:"capabilities"`
+	Status       string   `json:"status"`
+	IsHost       bool     `json:"isHost"`
 }
 
 func NewCreatePlayerHandler(service ports.PlayerService) http.HandlerFunc {
@@ -27,11 +27,11 @@ func NewCreatePlayerHandler(service ports.PlayerService) http.HandlerFunc {
 		}
 
 		result, err := service.CreatePlayer(r.Context(), ports.PlayerRecordInput{
-			GameID: payload.GameID,
-			UserID: payload.UserID,
-			Role:   payload.Role,
-			Status: payload.Status,
-			IsHost: payload.IsHost,
+			GameID:       payload.GameID,
+			UserID:       payload.UserID,
+			Capabilities: payload.Capabilities,
+			Status:       payload.Status,
+			IsHost:       payload.IsHost,
 		})
 		if err != nil {
 			if errors.Is(err, services.ErrInvalidPlayerInput) {

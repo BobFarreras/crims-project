@@ -33,12 +33,12 @@ func TestPlayerRepository_CreatePlayer_OK(t *testing.T) {
 
 		w.WriteHeader(http.StatusOK)
 		_ = json.NewEncoder(w).Encode(map[string]interface{}{
-			"id":     "player-1",
-			"gameId": "game-1",
-			"userId": "user-1",
-			"role":   "DETECTIVE",
-			"status": "ONLINE",
-			"isHost": true,
+			"id":           "player-1",
+			"gameId":       "game-1",
+			"userId":       "user-1",
+			"capabilities": []string{"DETECTIVE"},
+			"status":       "ONLINE",
+			"isHost":       true,
 		})
 	}))
 	defer server.Close()
@@ -50,11 +50,11 @@ func TestPlayerRepository_CreatePlayer_OK(t *testing.T) {
 
 	repo := NewPlayerRepository(client)
 	result, err := repo.CreatePlayer(context.Background(), PlayerRecordInput{
-		GameID: "game-1",
-		UserID: "user-1",
-		Role:   "DETECTIVE",
-		Status: "ONLINE",
-		IsHost: true,
+		GameID:       "game-1",
+		UserID:       "user-1",
+		Capabilities: []string{"DETECTIVE"},
+		Status:       "ONLINE",
+		IsHost:       true,
 	})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -85,12 +85,12 @@ func TestPlayerRepository_ListPlayersByGame_OK(t *testing.T) {
 		_ = json.NewEncoder(w).Encode(map[string]interface{}{
 			"items": []map[string]interface{}{
 				{
-					"id":     "player-1",
-					"gameId": "game-1",
-					"userId": "user-1",
-					"role":   "DETECTIVE",
-					"status": "ONLINE",
-					"isHost": true,
+					"id":           "player-1",
+					"gameId":       "game-1",
+					"userId":       "user-1",
+					"capabilities": []string{"DETECTIVE"},
+					"status":       "ONLINE",
+					"isHost":       true,
 				},
 			},
 		})

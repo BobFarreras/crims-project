@@ -39,7 +39,7 @@ func TestCreatePlayerHandler_OK(t *testing.T) {
 	service := fakePlayerService{createResult: ports.PlayerRecord{ID: "player-1"}}
 	handler := NewCreatePlayerHandler(service)
 
-	payload := []byte(`{"gameId":"game-1","userId":"user-1","role":"DETECTIVE","status":"ONLINE","isHost":true}`)
+	payload := []byte(`{"gameId":"game-1","userId":"user-1","capabilities":["DETECTIVE"],"status":"ONLINE","isHost":true}`)
 	request := httptest.NewRequest(http.MethodPost, "/api/players", bytes.NewReader(payload))
 	response := httptest.NewRecorder()
 

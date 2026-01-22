@@ -51,7 +51,7 @@ func (f *fakeLobbyPlayerRepo) ListPlayersByGame(ctx context.Context, gameID stri
 func TestLobbyService_JoinGame_Invalid(t *testing.T) {
 	service := NewLobbyService(&fakeLobbyGameRepo{}, &fakeLobbyPlayerRepo{})
 
-	_, err := service.JoinGame(context.Background(), "", "user-1", "DETECTIVE")
+	_, err := service.JoinGame(context.Background(), "", "user-1", []string{"DETECTIVE"})
 	if !errors.Is(err, ErrInvalidLobbyInput) {
 		t.Fatalf("expected ErrInvalidLobbyInput, got %v", err)
 	}
@@ -62,7 +62,7 @@ func TestLobbyService_JoinGame_OK(t *testing.T) {
 	playerRepo := &fakeLobbyPlayerRepo{createResult: ports.PlayerRecord{ID: "player-1"}}
 	service := NewLobbyService(gameRepo, playerRepo)
 
-	result, err := service.JoinGame(context.Background(), "ABCD", "user-1", "DETECTIVE")
+	result, err := service.JoinGame(context.Background(), "ABCD", "user-1", []string{"DETECTIVE"})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

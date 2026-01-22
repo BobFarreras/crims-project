@@ -10,9 +10,9 @@ const summary = [
 ]
 
 const players = [
-  { id: 'p1', name: 'Detective Mara', role: 'DETECTIVE' },
-  { id: 'p2', name: 'Forensic Leo', role: 'FORENSIC' },
-  { id: 'p3', name: 'Analyst Quin', role: 'ANALYST' }
+  { id: 'p1', name: 'Detective Mara', capabilities: ['DETECTIVE'] },
+  { id: 'p2', name: 'Forensic Leo', capabilities: ['FORENSIC', 'ANALYST'] },
+  { id: 'p3', name: 'Analyst Quin', capabilities: ['ANALYST'] }
 ]
 
 export default function CaseDashboard() {
@@ -68,7 +68,9 @@ export default function CaseDashboard() {
                 </div>
                 <div>
                     <p className="text-sm font-bold text-slate-900">{player.name}</p>
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-amber-600">{player.role}</p>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-amber-600">
+                      {player.capabilities.join(' + ')}
+                    </p>
                 </div>
               </div>
               <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" title="Online"></div>
