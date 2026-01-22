@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import LoginFlow from '../components/LoginFlow' // Assegura't que la ruta és correcta
+import LoginFlow from '../components/LoginFlow'
 import { authService } from '../services/auth.service'
 import { vi } from 'vitest'
 
@@ -10,7 +10,7 @@ vi.mock('../services/auth.service', () => ({
   },
 }))
 
-// Mock del Router
+// 🔥 FIX 4: Mock del Router (necessari pel useLogin)
 vi.mock('next/navigation', () => ({
   useRouter: () => ({
     push: vi.fn(),
@@ -19,7 +19,7 @@ vi.mock('next/navigation', () => ({
 
 describe('LoginFlow', () => {
   it('renders login form and submits successfully', async () => {
-    // Ara sí, com que l'hem definit com a vi.fn() a dalt, tenim mockResolvedValue
+    // Simulem que el login va bé
     vi.mocked(authService.login).mockResolvedValue({
         message: 'Login successful',
         user: { id: '1', username: 'test', name: 'Test User' }
@@ -28,7 +28,6 @@ describe('LoginFlow', () => {
     render(<LoginFlow />)
 
     const userInput = screen.getByLabelText(/Email/i)
-    // 🔥 FIX: També aquí especifiquem selector input
     const passInput = screen.getByLabelText(/Contrasenya/i, { selector: 'input' })
     const loginBtn = screen.getByRole('button', { name: /Entrar al Cas/i })
 

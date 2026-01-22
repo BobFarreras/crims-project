@@ -34,6 +34,9 @@ func (d disabledPocketBaseClient) CreateUser(username, email, password, password
 func (d disabledPocketBaseClient) AuthWithPassword(identity, password string) (*ports.AuthResponse, error) {
 	return nil, d.err
 }
+func (d disabledPocketBaseClient) RefreshAuth(token string) (*ports.AuthResponse, error) {
+	return nil, d.err
+}
 
 type disabledGameRepository struct{ err error }
 
@@ -252,7 +255,10 @@ func main() {
 	lobbyService = services.NewLobbyService(gameRepository, playerRepository)
 
 	// 🔥 NOU: Inicialitzar AuthHandler
-	authHandler := apihttp.NewAuthHandler(pocketBaseClient)
+	authHandler := apihttp.NewAuthHandler(pocketBaseClient, apihttp.AuthCookieConfig{
+		Secure:   cfg.AuthCookieSecure,
+		SameSite: cfg.AuthCookieSameSite,
+	})
 
 	// 6. Router
 	r := chi.NewRouter()
@@ -264,7 +270,7 @@ func main() {
 	r.Use(cors.Handler(cors.Options{
 		// ⚠️ IMPORTANT: No pots posar "*" si fas servir AllowCredentials.
 		// Has de posar l'origen exacte del Frontend.
-		AllowedOrigins: []string{"http://localhost:3000"},
+		AllowedOrigins: cfg.AllowedOrigins,
 		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders: []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders: []string{"Link"},

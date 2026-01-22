@@ -7,7 +7,6 @@ describe('LoginForm', () => {
     render(<LoginForm onSubmit={() => {}} />)
 
     expect(screen.getByLabelText(/Email/i)).toBeInTheDocument()
-    // 🔥 FIX: Especifiquem que volem l'input, per evitar conflicte amb el botó de l'ull
     expect(screen.getByLabelText(/Contrasenya/i, { selector: 'input' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Entrar al Cas/i })).toBeInTheDocument()
   })
@@ -16,7 +15,6 @@ describe('LoginForm', () => {
     const onSubmit = vi.fn()
     render(<LoginForm onSubmit={onSubmit} />)
 
-    // 🔥 FIX: Igual aquí, especifiquem selector: 'input'
     fireEvent.change(screen.getByLabelText(/Email/i), { target: { value: 'alice@example.com' } })
     fireEvent.change(screen.getByLabelText(/Contrasenya/i, { selector: 'input' }), { target: { value: 'secret' } })
     

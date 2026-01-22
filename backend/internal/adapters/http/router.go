@@ -21,6 +21,7 @@ func RegisterAuthRoutes(r chi.Router, handler *AuthHandler) {
 		r.Post("/register", handler.HandleRegister)
 		r.Post("/login", handler.HandleLogin)
 		r.Post("/logout", handler.HandleLogout)
+		r.Get("/session", handler.HandleSession)
 	})
 }
 
