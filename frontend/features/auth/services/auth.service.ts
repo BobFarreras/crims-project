@@ -28,7 +28,13 @@ export const authService = {
     });
 
     if (!res.ok) {
-      throw new Error('Credencials incorrectes o error del servidor');
+      if (res.status === 400) {
+        throw new Error('Falten dades per iniciar sessio.');
+      }
+      if (res.status === 401) {
+        throw new Error('Credencials incorrectes. Revisa el correu i la contrasenya.');
+      }
+      throw new Error('No hem pogut iniciar sessio. Torna-ho a provar.');
     }
 
     return await res.json();

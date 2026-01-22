@@ -1,10 +1,10 @@
-import CaseDashboard from '@/features/dashboard/CaseDashboard'
+import DashboardHub from '@/features/dashboard/DashboardHub'
 
-export default function CaseDashboardPage() {
+export default function DashboardHubPage() {
   return (
-    <div className="min-h-screen bg-slate-50 px-6 py-16 text-slate-900">
+    <div className="min-h-screen bg-amber-50 px-6 py-12 text-zinc-900">
       <div className="mx-auto max-w-6xl">
-        <CaseDashboard />
+        <DashboardHub />
       </div>
     </div>
   )

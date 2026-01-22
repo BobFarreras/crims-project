@@ -39,4 +39,20 @@ describe('LoginFlow', () => {
       expect(authService.login).toHaveBeenCalledWith('detective1@example.com', 'password123')
     })
   })
+
+  it('shows error message on failed login', async () => {
+    vi.mocked(authService.login).mockRejectedValue(new Error('Credencials incorrectes. Revisa el correu i la contrasenya.'))
+
+    render(<LoginFlow />)
+
+    const userInput = screen.getByLabelText(/Email/i)
+    const passInput = screen.getByLabelText(/Contrasenya/i, { selector: 'input' })
+    const loginBtn = screen.getByRole('button', { name: /Entrar al Cas/i })
+
+    fireEvent.change(userInput, { target: { value: 'detective1@example.com' } })
+    fireEvent.change(passInput, { target: { value: 'wrongpass' } })
+    fireEvent.click(loginBtn)
+
+    expect(await screen.findByText(/Credencials incorrectes\. Revisa el correu i la contrasenya\./i)).toBeInTheDocument()
+  })
 })
