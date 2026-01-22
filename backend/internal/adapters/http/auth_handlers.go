@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/digitaistudios/crims-backend/internal/platform/web"
@@ -53,7 +54,51 @@ func (h *AuthHandler) HandleRegister(w http.ResponseWriter, r *http.Request) {
 	web.RespondJSON(w, http.StatusOK, map[string]string{"message": "User registered successfully"})
 }
 
+type LoginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
 func (h *AuthHandler) HandleLogin(w http.ResponseWriter, r *http.Request) {
-	// Implementació futura
-	web.RespondJSON(w, http.StatusOK, map[string]string{"token": "fake-jwt-token"})
+	var req LoginRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		web.RespondError(w, http.StatusBadRequest, "invalid request body", "auth/bad_request")
+		return
+	}
+	fmt.Printf("🔍 LOGIN INTENT: User='%s' Pass='%s'\n", req.Username, req.Password)
+	// Crida a PocketBase
+	authResp, err := h.pbClient.AuthWithPassword(req.Username, req.Password)
+	if err != nil {
+		web.RespondError(w, http.StatusUnauthorized, "invalid credentials", "auth/invalid_credentials")
+		return
+	}
+
+	// 🔥 IMPLEMENTACIÓ COOKIE SEGURA (OWASP)
+	http.SetCookie(w, &http.Cookie{
+		Name:  "auth_token",   // Nom de la cookie
+		Value: authResp.Token, // El token JWT
+		Path:  "/",            // Disponible a tota l'app
+
+		// 🛡️ SEGURETAT MÀXIMA
+		HttpOnly: true,                 // JS no la pot llegir (Anti-XSS)
+		SameSite: http.SameSiteLaxMode, // Protecció CSRF bàsica
+
+		// ⚠️ EN PRODUCCIÓ: Posa Secure: true (només HTTPS).
+		// En localhost (HTTP), ha de ser false o el navegador la bloquejarà.
+		Secure: false,
+
+		MaxAge: 7 * 24 * 60 * 60, // 7 dies (en segons)
+	})
+
+	// Resposta JSON neta (sense token visible)
+	response := map[string]interface{}{
+		"message": "Login successful",
+		"user": map[string]string{
+			"id":       authResp.Record.ID,
+			"username": authResp.Record.Username,
+			"name":     authResp.Record.Name,
+		},
+	}
+
+	web.RespondJSON(w, http.StatusOK, response)
 }

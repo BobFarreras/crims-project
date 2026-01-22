@@ -22,11 +22,12 @@ export const authService = {
       headers: {
         'Content-Type': 'application/json'
       },
+      // 🔥 CLAU: Permet l'intercanvi de cookies HttpOnly
+      credentials: 'include',
       body: JSON.stringify({ username, password }),
     });
 
     if (!res.ok) {
-      // Aquí podries gestionar errors 401, 500, etc.
       throw new Error('Credencials incorrectes o error del servidor');
     }
 

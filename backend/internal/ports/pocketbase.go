@@ -2,10 +2,20 @@ package ports
 
 import "context"
 
-// PocketBaseClient defineix el contracte minim per validar connexio amb la BaaS.
-// Ha de ser substituible si canviem a Supabase.
+// AuthResponse representa la resposta de PocketBase al fer login
+type AuthResponse struct {
+	Token  string `json:"token"`
+	Record struct {
+		ID       string `json:"id"`
+		Username string `json:"username"`
+		Email    string `json:"email"`
+		Name     string `json:"name"`
+	} `json:"record"`
+}
+
 type PocketBaseClient interface {
 	Ping(ctx context.Context) error
-	// NOU MÈTODE
 	CreateUser(username, email, password, passwordConfirm, name string) error
+	// 🔥 NOU MÈTODE
+	AuthWithPassword(identity, password string) (*AuthResponse, error)
 }

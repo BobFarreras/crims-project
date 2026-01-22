@@ -115,3 +115,43 @@ func (c *Client) CreateUser(username, email, password, passwordConfirm, name str
 
 	return nil
 }
+
+// ... (imports existents)
+
+func (c *Client) AuthWithPassword(identity, password string) (*ports.AuthResponse, error) {
+	// 1. Construir la URL (recorda canviar "users" si la teva col·lecció es diu diferent)
+	targetURL := c.baseURL + "/api/collections/users/auth-with-password"
+
+	// 2. Preparar el payload (PocketBase espera 'identity' i 'password')
+	payload := map[string]string{
+		"identity": identity,
+		"password": password,
+	}
+	body, _ := json.Marshal(payload)
+
+	// 3. Fer la petició
+	req, err := http.NewRequest(http.MethodPost, targetURL, bytes.NewBuffer(body))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	// 4. Gestionar errors
+	if resp.StatusCode >= 400 {
+		return nil, fmt.Errorf("login failed with status: %d", resp.StatusCode)
+	}
+
+	// 5. Decodificar la resposta real
+	var authResp ports.AuthResponse
+	if err := json.NewDecoder(resp.Body).Decode(&authResp); err != nil {
+		return nil, fmt.Errorf("failed to decode response: %w", err)
+	}
+
+	return &authResp, nil
+}

@@ -8,18 +8,27 @@ export function useLogin() {
   const [error, setError] = useState<string | null>(null);
 
   const login = async (username: string, password: string) => {
+    // 🛡️ Protecció contra 'undefined'
+    if (!username || !password) {
+      console.error("❌ Error: Dades incompletes al useLogin", { username, password });
+      setError("Error intern: Falten dades. Refresca la pàgina.");
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     
     try {
-      // 1. Cridem al servei (lògica backend)
+      // Debug per veure que arriba bé
+      console.log("🚀 Fent login amb:", { user: username, passLength: password.length });
+      
       await authService.login(username, password);
       
-      // 2. Si tot va bé, redirigim
       router.push('/game/dashboard');
     } catch (err) {
-      // 3. Gestionem errors
-      setError(err instanceof Error ? err.message : 'Error en iniciar sessió');
+      console.error("❌ Error al login:", err);
+      // Missatge genèric de seguretat
+      setError('Credencials incorrectes.');
     } finally {
       setIsLoading(false);
     }
