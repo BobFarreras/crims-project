@@ -14,5 +14,5 @@ Exposar endpoints de salut i metrics basiques.
 ## Criteris d'Aceptacio
 - `/api/v1/metrics` respon 200 amb JSON.
 
-## Pla de Tests (TDD)
+## Pla de Tests (Integracio)
 1. Handler retorna 200 i json.

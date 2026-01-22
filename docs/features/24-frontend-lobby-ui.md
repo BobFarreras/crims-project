@@ -17,6 +17,6 @@ Crear una pantalla inicial per unir-se a una partida amb codi i rol.
 - Renderitza títol, inputs i botó.
 - Valida que el codi no estigui buit.
 
-## Pla de Tests (TDD)
+## Pla de Tests (Integracio)
 1. Renderitza els camps principals.
 2. Mostra error quan el codi es buit.

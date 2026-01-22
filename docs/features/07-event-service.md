@@ -26,7 +26,7 @@ Afegir la capa de dades i servei per gestionar Events (timeline) per partida.
 - GET per id retorna 200.
 - GET per gameId retorna llista.
 
-## Pla de Tests (TDD)
+## Pla de Tests (Integracio)
 1. Repo: create OK / error.
 2. Repo: list per game OK.
 3. Service: invalid inputs.

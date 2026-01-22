@@ -143,7 +143,7 @@ crims-project/
 │   └── go.mod
 ├── docs/                 # Documentation
 │   ├── architecture/     # System design
-│   ├── features/         # Feature specs (TDD)
+│   ├── features/         # Feature specs (integracio-first)
 │   └── deployment.md     # Deployment guide
 ├── .github/              # CI/CD workflows
 ├── .ai/                  # AI agent context & skills
@@ -179,7 +179,7 @@ Separació clara de responsabilitats:
 - [Game Logic Engine](./docs/architecture/game-logic-engine.md) - Motor lògic
 - [Project Structure](./docs/architecture/project-structure.md) - Estructura detallada
 - [Project Phases](./docs/architecture/project-phases.md) - Guia pas a pas del roadmap
-- [Features](./docs/features/) - Especificacions de cada feature (TDD)
+- [Features](./docs/features/) - Especificacions de cada feature (integració-first)
 
 ## 🔧 Desenvolupament
 
@@ -206,11 +206,11 @@ main              → Producció (sempre estable)
 
 Veure [Git Workflow](./docs/git-workflow.md) per detalls complets.
 
-### Workflow TDD
+### Workflow Integration-First
 
 1. **Doc:** Crea documentació a `docs/features/X.md`
-2. **Test:** Escriu test basat en la doc
-3. **Code:** Implementa per passar el test
+2. **Test:** Escriu tests d'integració basats en la doc (evita mocks)
+3. **Code:** Implementa per passar els tests
 
 ### Commit Conventions
 

@@ -26,7 +26,7 @@ Crear el repositori de `Game` per persistir i recuperar partides a PocketBase, d
 - GET per id retorna `Game`.
 - GET per code retorna `Game` o error si no existeix.
 
-## Pla de Tests (TDD)
+## Pla de Tests (Integracio)
 1. **CreateGame OK** → POST amb payload correcte i resposta 200.
 2. **CreateGame HTTP 500** → retorna error `ErrUnexpectedStatus`.
 3. **GetGameByID OK** → GET correcte i parse de resposta.

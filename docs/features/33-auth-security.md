@@ -4,7 +4,7 @@
 El sistema utilitza un flux d'autenticació basat en **HttpOnly Cookies** per complir amb els estàndards OWASP i prevenir atacs XSS (Cross-Site Scripting).
 
 ### Components:
-* **Frontend (Next.js):** Gestiona la UI i el Middleware de protecció de rutes.
+* **Frontend (Next.js):** Gestiona la UI i el Middleware de protecció de rutes (llegeix cookie).
 * **Backend (Go):** Actua com a Proxy de Seguretat. Valida credencials i gestiona les Cookies.
 * **Base de Dades (PocketBase):** Emmagatzema usuaris i valida contrasenyes (Bcrypt).
 
@@ -21,14 +21,15 @@ El sistema utilitza un flux d'autenticació basat en **HttpOnly Cookies** per co
 4.  **Frontend:** Redirigeix automàticament al Login.
 
 ### B. Inici de Sessió (Login) - 🔒 SECURE FLOW
-1.  **UI:** Formulari `LoginForm` envia credencials.
+1.  **UI:** Formulari `LoginForm` envia `email` i `password`.
 2.  **Petició:** `POST /api/auth/login` amb `credentials: 'include'`.
 3.  **Backend:**
     * Valida credencials contra PocketBase (`AuthWithPassword`).
     * Rep un JWT Token de PocketBase.
     * **Acció Crítica:** Genera una cookie `auth_token` amb el JWT.
     * Configuració Cookie: `HttpOnly: true`, `SameSite: Lax`, `Path: /`.
-4.  **Navegador:** Emmagatzema la cookie de forma inaccessible per a JavaScript.
+4.  **Resposta:** JSON amb `message` i objecte `user` (sense exposar el token).
+5.  **Navegador:** Emmagatzema la cookie de forma inaccessible per a JavaScript.
 
 ### C. Protecció de Rutes (Middleware)
 Un fitxer `middleware.ts` s'executa a cada petició a Next.js:
@@ -42,7 +43,7 @@ Un fitxer `middleware.ts` s'executa a cada petició a Next.js:
 | Amenaça | Solució Implementada |
 | :--- | :--- |
 | **XSS (Robatori de Token)** | El token està en una Cookie **HttpOnly**. El JS maliciós no la pot llegir. |
-| **CSRF (Falsificació)** | Cookie configurada amb **SameSite=Lax**. CORS configurat estrictament al Backend. |
+| **CSRF (Falsificació)** | Cookie configurada amb **SameSite=Lax** en entorn same-site. En producció, usar `SameSite=None` + `Secure` per domini separat. |
 | **Enumeració d'Usuaris** | Missatges d'error genèrics al Login ("Credencials invàlides"). |
 | **Intercepció** | Backend preparat per activar `Secure: true` (només HTTPS) en producció. |
 

@@ -4,11 +4,11 @@
 Plataforma de joc interactiu d'investigació criminal multijugador en temps real.
 L'objectiu és oferir una experiència immersiva (PWA) amb sincronització, narrativa generada per IA i multimèdia.
 
-## 🛑 PROTOCOL STRICTE: TDD & DOCS
+## 🛑 PROTOCOL STRICTE: DOCS + INTEGRATION TESTS
 Abans de generar qualsevol codi d'implementació, has de seguir aquest ordre:
 1.  **PHASE 1 - DOC:** Existeix el fitxer `/docs/features/X.md`? Si no, crea'l seguint `skill-documentation.md`.
-2.  **PHASE 2 - TEST:** Crea el fitxer de test (`_test.go` o `.test.tsx`) basat en la documentació. Verifica que falla.
-3.  **PHASE 3 - CODE:** Ara sí, genera el codi per passar el test.
+2.  **PHASE 2 - TEST:** Crea primer tests **d'integració** (`_test.go` o `.test.tsx`) basats en la documentació. Evita mocks sempre que puguis. Verifica que fallen.
+3.  **PHASE 3 - CODE:** Ara sí, genera el codi per passar els tests.
 
 **Si l'usuari demana codi directament, ATURA'T i demana permís per crear primer el pla de tests.**
 

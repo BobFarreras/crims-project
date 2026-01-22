@@ -26,7 +26,7 @@ Centralitzar la configuracio del backend per evitar valors hardcoded i facilitar
 - `Load()` retorna error si `PB_TIMEOUT` no es pot parsejar.
 - `cmd/server` usa `config.Load()` per inicialitzar el client de PocketBase.
 
-## Pla de Tests (TDD)
+## Pla de Tests (Integracio)
 1. **Sense envs** → defaults correctes.
 2. **PB_TIMEOUT invalid** → error.
 3. **PB_TIMEOUT valid** → duration correcta.

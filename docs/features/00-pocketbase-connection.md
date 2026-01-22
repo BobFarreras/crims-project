@@ -30,7 +30,7 @@ No calen coleccions per provar la connexio. La prova es pot fer amb health check
 - Si el servidor respon, el client retorna OK.
 - Els logs inclouen latencia i error si n'hi ha.
 
-## Pla de Tests (TDD)
+## Pla de Tests (Integracio)
 
 ### Unit Tests (Go)
 1. **Client init sense PB_URL** → retorna error `ErrMissingPBUrl`.

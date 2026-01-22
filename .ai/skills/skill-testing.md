@@ -398,9 +398,9 @@ test.describe('Flujo completo del juego', () => {
 
 ---
 
-## 7. TDD (Test-Driven Development)
+## 7. Integration-First (Test-Driven Development)
 
-### Flujo Completo de TDD:
+### Flujo Completo de Integration-First:
 
 ```
 1. DOCUMENTACIÓN
@@ -409,13 +409,13 @@ test.describe('Flujo completo del juego', () => {
    → Definir Criterios de Aceptación
 
 2. TEST FALLIDO (RED)
-   → Escribir test basado en la documentación
+   → Escribir test de integración basado en la documentación
    → Ejecutar: test DEBE fallar
    → Verificar que falla: ❌
 
 3. IMPLEMENTACIÓN
    → Escribir el código MÍNIMO para pasar el test
-   → No escribir código extra
+   → Evitar mocks si el flujo puede validarse con adaptadores reales
 
 4. TEST PASADO (GREEN)
    → Ejecutar el test de nuevo
@@ -429,7 +429,7 @@ test.describe('Flujo completo del juego', () => {
    → Commit con mensaje: `feat: implementar [feature]`
 ```
 
-### Ejemplo Práctico de TDD:
+### Ejemplo Práctico de Integration-First:
 
 ```typescript
 // PASO 1: Documentación (docs/features/investigation-board.md)

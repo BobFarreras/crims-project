@@ -55,7 +55,7 @@ func (h *AuthHandler) HandleRegister(w http.ResponseWriter, r *http.Request) {
 }
 
 type LoginRequest struct {
-	Username string `json:"username"`
+	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
@@ -65,9 +65,9 @@ func (h *AuthHandler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 		web.RespondError(w, http.StatusBadRequest, "invalid request body", "auth/bad_request")
 		return
 	}
-	fmt.Printf("🔍 LOGIN INTENT: User='%s' Pass='%s'\n", req.Username, req.Password)
+	fmt.Printf("🔍 LOGIN INTENT: Email='%s' Pass='%s'\n", req.Email, req.Password)
 	// Crida a PocketBase
-	authResp, err := h.pbClient.AuthWithPassword(req.Username, req.Password)
+	authResp, err := h.pbClient.AuthWithPassword(req.Email, req.Password)
 	if err != nil {
 		web.RespondError(w, http.StatusUnauthorized, "invalid credentials", "auth/invalid_credentials")
 		return

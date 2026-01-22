@@ -15,7 +15,7 @@ $f07 = @"
 * **Backend:** `SubmitAccusation()` compara amb `CaseTruth`.
 * **Scoring:** Algorisme de precisió (Pistes útils vs Soroll).
 
-## 4. TDD Plan
+## 4. Integration Plan
 - [ ] `TestAccusation_Gate_Locked_If_Hypothesis_Weak`
 - [ ] `TestScore_Calculation_PerfectMatch`
 "@

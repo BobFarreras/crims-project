@@ -17,6 +17,6 @@ Permetre sincronitzacio en temps real de l'estat del joc.
 - Connecta i manté connexio.
 - Broadcast arriba als clients del mateix gameId.
 
-## Pla de Tests (TDD)
+## Pla de Tests (Integracio)
 1. Hub registra i elimina clients.
 2. Broadcast envia a tots els clients del mateix gameId.

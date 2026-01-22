@@ -1,6 +1,6 @@
 # 📘 Project Phases (Frontend + Backend + Data)
 
-Guia pas a pas per construir el projecte de manera segura i incremental, seguint TDD i les normes d'AGENTS.
+Guia pas a pas per construir el projecte de manera segura i incremental, seguint tests d'integracio i les normes d'AGENTS.
 
 ## 0) Preparacio
 - Definir versio objectiu (ex: `v1.0.1`) i crear `release/vX.Y.Z`.
@@ -23,10 +23,10 @@ Guia pas a pas per construir el projecte de manera segura i incremental, seguint
 - API HTTP basica a `backend/internal/adapters/http`.
 - Contractes d'API i DTOs estables (per clients futurs).
 
-**TDD obligatori:**
+**Integration-first obligatori:**
 1. Documentar feature a `docs/features/X.md`.
-2. Crear tests (`_test.go`) i verificar que fallen.
-3. Implementar fins a passar tests.
+2. Crear tests d'integracio (`_test.go`) i verificar que fallen.
+3. Implementar fins a passar els tests.
 
 ## 3) Fase Frontend Core (Next.js)
 **Objectiu:** Flux minim de joc i UI base.
@@ -35,10 +35,10 @@ Guia pas a pas per construir el projecte de manera segura i incremental, seguint
 - Integracio amb PocketBase i API (`/frontend/lib/infra`).
 - Evitar logica de domini al client; el backend valida tot.
 
-**TDD obligatori:**
+**Integration-first obligatori:**
 1. Documentar feature a `docs/features/X.md`.
-2. Crear tests (`.test.tsx`) i verificar que fallen.
-3. Implementar fins a passar tests.
+2. Crear tests d'integracio (`.test.tsx`) i verificar que fallen.
+3. Implementar fins a passar els tests.
 
 ## 4) Fase Multiplayer + Sync
 **Objectiu:** Estat compartit i temps real.
@@ -54,7 +54,7 @@ Guia pas a pas per construir el projecte de manera segura i incremental, seguint
 
 ## 6) Fase Qualitat (QA + Stabilization)
 **Objectiu:** Seguretat, tests, i estabilitat.
-- Ampliar tests (unit + integracio).
+- Ampliar tests (integracio + unit si cal).
 - Revisar lint i build.
 - Revisar secrets i configuracio `.env.local`.
 - Mantenir separacio de responsabilitats (ports/adapters).

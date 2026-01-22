@@ -19,7 +19,7 @@ Afegir una capa de servei per orquestrar la logica de creacio i consulta de part
 - Entrades invalides → error immediat (sense cridar repositori).
 - Entrades valides → crida repositori i retorna resultat.
 
-## Pla de Tests (TDD)
+## Pla de Tests (Integracio)
 1. **CreateGame invalid** → error per `code/state/seed` buits.
 2. **CreateGame OK** → delega al repositori.
 3. **GetGameByID invalid** → error.

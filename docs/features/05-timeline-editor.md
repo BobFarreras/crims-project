@@ -14,7 +14,7 @@ $f05 = @"
 ## 3. Disseny Tècnic
 * **Backend:** Validació lògica `ValidateTimeline(events[])`.
 
-## 4. TDD Plan
+## 4. Integration Plan
 - [ ] `TestTimeline_Overlap_ReturnsConflict`
 - [ ] `TestTimeline_ImpossibleTravelTime`
 "@

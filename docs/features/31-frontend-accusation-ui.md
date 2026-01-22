@@ -15,6 +15,6 @@ Crear la UI per fer una acusació final.
 - Renderitza títol "Accusation".
 - Renderitza 3 selects.
 
-## Pla de Tests (TDD)
+## Pla de Tests (Integracio)
 1. Renderitza títol.
 2. Renderitza 3 selects.

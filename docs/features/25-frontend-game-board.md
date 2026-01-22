@@ -17,6 +17,6 @@ Crear el tauler principal per connectar pistes, persones i hipotesis.
 - Renderitza titol, tauler i sidebar.
 - Mostra almenys 3 nodes mock.
 
-## Pla de Tests (TDD)
+## Pla de Tests (Integracio)
 1. Renderitza el títol i el tauler.
 2. Mostra 3 nodes mock.

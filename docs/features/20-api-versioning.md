@@ -15,5 +15,5 @@ Versionar l'API per garantir compatibilitat amb clients actuals i futurs.
 - `/api/v1/health` respon.
 - `/api/health` no existeix.
 
-## Pla de Tests (TDD)
+## Pla de Tests (Integracio)
 1. Registrar rutes amb helper afegeix prefix `/api/v1`.

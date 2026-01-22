@@ -16,7 +16,7 @@ $f01 = @"
 * **DB:** Col·lecció `games` (code, status) i `players` (role, game_id).
 * **Realtime:** Subscripció a `players(game_id)` per veure qui entra.
 
-## 4. TDD Plan
+## 4. Integration Plan
 - [ ] `TestCreateLobby_ReturnsCode`
 - [ ] `TestJoinLobby_Success`
 - [ ] `TestJoinLobby_RoleTaken_ReturnsError`

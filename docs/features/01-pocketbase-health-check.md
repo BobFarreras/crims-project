@@ -17,6 +17,6 @@ Exposar un endpoint de salut per validar la connexio amb PocketBase en runtime.
 - Si `Ping()` retorna OK, resposta `200` amb `{ status: "healthy", pocketbase: "ok" }`.
 - Si `Ping()` falla, resposta `503` amb error JSON i codi `pocketbase_unavailable`.
 
-## Pla de Tests (TDD)
+## Pla de Tests (Integracio)
 1. **Ping OK** → status 200 + JSON correcte.
 2. **Ping error** → status 503 + ErrorResponse amb codi.

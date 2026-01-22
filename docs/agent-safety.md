@@ -101,12 +101,12 @@ Operaciones permitidas:
 - Cambios en `backend/` o `frontend/features/`
 
 **Procedimiento:**
-1. **VERIFICAR TDD PRIMERO:**
+1. **VERIFICAR DOC + INTEGRATION TEST PRIMERO:**
    - ¿Existe `docs/features/XX.md`? → Si no, PEDIR PERMISO
-   - ¿Existe el test? → Si no, PEDIR PERMISO
+   - ¿Existe el test de integración? → Si no, PEDIR PERMISO
 2. Crear `branch: feature/nombre` (SIEMPRE nueva branch)
-3. Implementar siguiendo TDD
-4. Ejecutar `make test-unit` → **Si falla, NO COMMIT**
+3. Implementar siguiendo integración-first (evitar mocks)
+4. Ejecutar tests de integración (ex: `go test ./...`, `pnpm test`) → **Si falla, NO COMMIT**
 5. Ejecutar `pnpm lint` → **Si falla, NO COMMIT**
 6. Crear PR a `develop`
 7. **NO puede hacer merge ni push a `main`** → PEDIR REVISIÓN
@@ -279,13 +279,13 @@ git diff --cached --name-only | grep -E "node_modules|\.next|build|\.git|\.env"
 **Situación:** El usuario pide implementar una nueva funcionalidad.
 
 **Protocolo:**
-1. ⚠️ **VERIFICAR TDD:**
+1. ⚠️ **VERIFICAR DOC + INTEGRATION TEST:**
    - ¿Existe `docs/features/XX.md`?
    - Si NO → "Antes de implementar, necesito crear la documentación. ¿Te parece bien?"
    - Si SÍ → Continuar con el siguiente paso
-2. ⚠️ **VERIFICAR TEST:**
+2. ⚠️ **VERIFICAR TEST DE INTEGRACIÓN:**
    - ¿Existe el test?
-   - Si NO → "Antes de implementar, necesito crear el test. ¿Te parece bien?"
+   - Si NO → "Antes de implementar, necesito crear el test de integración. ¿Te parece bien?"
    - Si SÍ → Implementar el código
 
 ### Cuando Hay Errores en Tests

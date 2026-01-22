@@ -24,7 +24,7 @@ Exposar endpoints minimals per crear i obtenir partides.
 - GET per id retorna 200.
 - GET per code retorna 200 o 404 si no existeix.
 
-## Pla de Tests (TDD)
+## Pla de Tests (Integracio)
 1. **POST OK** → 201 + JSON.
 2. **POST invalid** → 400.
 3. **GET id OK** → 200 + JSON.

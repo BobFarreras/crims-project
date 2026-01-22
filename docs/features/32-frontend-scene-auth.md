@@ -1,18 +1,18 @@
 # 32 - Frontend Scene + Auth UI (Inicial)
 
 ## Objectiu
-- Implementar la UI mínima per a Scene (exploració 3D simulada) i una UI d Autenticació bàsica (Login) en el frontend.
+- Implementar la UI mínima per a Scene (exploració 3D simulada) i una UI d'Autenticació bàsica (Login) en el frontend.
 
 ## Abast
 - Nova ruta de joc: `/game/scene` amb una vista de SceneViewport (mock).
-- Nova ruta d'Autenticació: `/login` dins l’espai `(auth)` (layout existent) amb un LoginForm bàsic.
+- Nova ruta d'Autenticació: `/login` dins l'espai `(auth)` (layout existent) amb un LoginForm bàsic.
 - Components modulars sota `frontend/features/scene` i `frontend/features/auth`.
-- Tests unitats per SceneViewport i LoginForm (renderització bàsica).
+- Tests d'interfície bàsics per SceneViewport i LoginForm (renderització bàsica).
 
 ## Requeriments
 - UI simplificada i responsive per mobile/desktop.
 - SceneViewport amb contingut de placeholder i estil coherent amb la resta de UI.
-- LoginForm amb dos camps (username, password) i botó de login.
+- LoginForm amb dos camps (email, password) i botó de login.
 - Tests que fallen abans de la implementació i passen després.
 
 ## Criteris d'Aceptació
@@ -20,7 +20,7 @@
 - SceneViewport mostra el text de mock utilitzat i és present a la pàgina `/game/scene`.
 - LoginForm mostra dos camps i un botó, i és possible interaccionar amb ells.
 
-## Pla de Tests (TDD)
+## Pla de Tests (Integracio)
 - 1) Documentar feature a `docs/features/32-frontend-scene-auth.md` (ja fet).
 - 2) Escriviu tests per SceneViewport i LoginForm (falsos al principi).
 - 3) Implementar el codi fins passar tots els tests.
@@ -36,4 +36,4 @@
 
 ## Treball Futur
 - Integrar SceneViewport amb un motor 3D (Three.js) quan sigui viable.
-- Substituir LoginForm mock per autenticació real (PocketBase/Auth).
+- Afegir flux de registre complet i pantalla de recuperació de contrasenya.

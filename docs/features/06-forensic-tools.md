@@ -15,7 +15,7 @@ $f06 = @"
 * **Frontend:** Canvas filters (CSS brightness/contrast/invert).
 * **Backend:** `AnalyzeClue(clueID, toolID)` -> actualitza estat.
 
-## 4. TDD Plan
+## 4. Integration Plan
 - [ ] `TestAnalyze_CorrectTool_UpdatesState`
 - [ ] `TestAnalyze_WrongTool_NoChange`
 "@

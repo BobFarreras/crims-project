@@ -17,7 +17,7 @@ export default function LoginFlow() {
       
       {/* ✅ CANVI: Reben 'data' (objecte) i l'obrim per passar-lo al hook */}
       <LoginForm 
-        onSubmit={(data) => login(data.username, data.password)} 
+        onSubmit={(data) => login(data.email, data.password)} 
         isLoading={isLoading}
       />
     </div>

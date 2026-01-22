@@ -17,6 +17,6 @@ Integrar Gemini per generar text narratiu (flavor text) sense afectar la logica.
 - Sense API key → error clar.
 - Resposta ok → text no buit.
 
-## Pla de Tests (TDD)
+## Pla de Tests (Integracio)
 1. Client sense API key → error.
 2. Client respon OK → retorna text.

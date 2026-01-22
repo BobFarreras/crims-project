@@ -16,7 +16,7 @@ $f03 = @"
 * **Frontend:** Imatge interactiva amb coordenades absolutes (%).
 * **Data:** JSON `scene_config` amb llista de `{id, x, y, required_role}`.
 
-## 4. TDD Plan
+## 4. Integration Plan
 - [ ] `TestCollectClue_AddsToInventory`
 - [ ] `TestGetScene_FiltersHotspotsByRole`
 "@

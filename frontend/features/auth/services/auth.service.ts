@@ -2,11 +2,11 @@
 
 // Tipus per la resposta (pots moure-ho a types/auth.types.ts)
 export type LoginResponse = {
-  token: string;
+  message: string;
   user: {
     id: string;
     username: string;
-    role: string;
+    name: string;
   };
 };
 
@@ -16,7 +16,7 @@ export const authService = {
   /**
    * Realitza la petició de login al backend
    */
-  async login(username: string, password: string): Promise<LoginResponse> {
+  async login(email: string, password: string): Promise<LoginResponse> {
     const res = await fetch(`${API_URL}/api/auth/login`, {
       method: 'POST',
       headers: {
@@ -24,7 +24,7 @@ export const authService = {
       },
       // 🔥 CLAU: Permet l'intercanvi de cookies HttpOnly
       credentials: 'include',
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ email, password }),
     });
 
     if (!res.ok) {

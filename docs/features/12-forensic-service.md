@@ -27,7 +27,7 @@ Gestionar l'analisi forense de pistes per partida.
 - GET per id retorna 200.
 - GET per gameId retorna llista.
 
-## Pla de Tests (TDD)
+## Pla de Tests (Integracio)
 1. Repo: create OK / error.
 2. Repo: list per game OK.
 3. Service: invalid inputs.

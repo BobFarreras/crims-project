@@ -1,12 +1,16 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import LoginFlow from '../components/LoginFlow'
+import LoginFlow from '../components/LoginFlow' // Assegura't que la ruta és correcta
 import { authService } from '../services/auth.service'
 import { vi } from 'vitest'
 
-// Mock del servei d'auth
-vi.mock('../../services/auth.service')
+// 🔥 FIX: Definim el mock explícitament perquè vi.fn() estigui disponible
+vi.mock('../services/auth.service', () => ({
+  authService: {
+    login: vi.fn(),
+  },
+}))
 
-// 🔥 FIX 4: Mock del Router (necessari pel useLogin)
+// Mock del Router
 vi.mock('next/navigation', () => ({
   useRouter: () => ({
     push: vi.fn(),
@@ -15,26 +19,25 @@ vi.mock('next/navigation', () => ({
 
 describe('LoginFlow', () => {
   it('renders login form and submits successfully', async () => {
-    // Simulem que el login va bé
-    vi.mocked(authService.login).mockResolvedValue({ 
-        token: 'fake-jwt', 
-        user: { id: '1', username: 'test', role: 'admin' } 
+    // Ara sí, com que l'hem definit com a vi.fn() a dalt, tenim mockResolvedValue
+    vi.mocked(authService.login).mockResolvedValue({
+        message: 'Login successful',
+        user: { id: '1', username: 'test', name: 'Test User' }
     })
 
     render(<LoginFlow />)
 
-    // 🔥 FIX 5: Textos en català
-    const userInput = screen.getByLabelText(/Usuari o Email/i)
-    const passInput = screen.getByLabelText(/Contrasenya/i)
+    const userInput = screen.getByLabelText(/Email/i)
+    // 🔥 FIX: També aquí especifiquem selector input
+    const passInput = screen.getByLabelText(/Contrasenya/i, { selector: 'input' })
     const loginBtn = screen.getByRole('button', { name: /Entrar al Cas/i })
 
-    fireEvent.change(userInput, { target: { value: 'detective1' } })
+    fireEvent.change(userInput, { target: { value: 'detective1@example.com' } })
     fireEvent.change(passInput, { target: { value: 'password123' } })
     fireEvent.click(loginBtn)
 
     await waitFor(() => {
-      // Ara comprovem que crida al servei amb els arguments separats
-      expect(authService.login).toHaveBeenCalledWith('detective1', 'password123')
+      expect(authService.login).toHaveBeenCalledWith('detective1@example.com', 'password123')
     })
   })
 })

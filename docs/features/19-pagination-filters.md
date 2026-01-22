@@ -16,6 +16,6 @@ Afegir suport estandard de paginacio i filtratge a les llistes.
 - Listats sense opcions funcionen com ara.
 - Amb opcions, el query inclou page/perPage/filter.
 
-## Pla de Tests (TDD)
+## Pla de Tests (Integracio)
 1. Construccio de query amb defaults.
 2. Construccio de query amb params.

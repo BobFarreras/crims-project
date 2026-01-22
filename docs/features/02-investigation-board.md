@@ -59,7 +59,7 @@ func CalculateStrength(hypoID string) string {
 
 ---
 
-### 4. Pla de Tests (TDD)
+### 4. Pla de Tests (Integracio)
 
 **Backend (Go)** - `internal/game/board_test.go`
 - [ ] `TestConnect_Supports_IncreasesScore`: Connectar una pista a una hipòtesi ha de pujar el seu score.

@@ -15,7 +15,7 @@ Abans de demanar codi, crea un fitxer de especificació a `/docs/features/NOM-FE
     * Endpoint (API): `POST /api/game/join`
     * Dades (JSON): `{ "code": "XY99" }`
     * Canvis a BD: Taula `games`, camp `players`.
-4.  **Casos de Test (TDD Plan):**
+4.  **Casos de Test (Integration Plan):**
     * [ ] Cas feliç (tot va bé).
     * [ ] Cas error (codi incorrecte).
     * [ ] Cas límit (sala plena).

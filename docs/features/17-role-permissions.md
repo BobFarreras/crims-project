@@ -17,7 +17,7 @@ Aplicar permisos per rol a endpoints sensibles.
 - Rol permès → request continua.
 - Rol no permès → 403.
 
-## Pla de Tests (TDD)
+## Pla de Tests (Integracio)
 1. Sense rol → 403.
 2. Rol no permès → 403.
 3. Rol permès → 200.

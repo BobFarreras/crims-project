@@ -18,6 +18,6 @@ Crear un dashboard resum de la partida amb estat i participants.
 - Renderitza 3 targetes de resum.
 - Renderitza 3 players mock.
 
-## Pla de Tests (TDD)
+## Pla de Tests (Integracio)
 1. Renderitza titol i targetes.
 2. Renderitza 3 players mock.

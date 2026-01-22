@@ -23,7 +23,7 @@ Gestionar l'entrada i preparacio de jugadors dins una partida.
 - POST retorna 201 amb player creat.
 - GET retorna llista de players de la partida.
 
-## Pla de Tests (TDD)
+## Pla de Tests (Integracio)
 1. Service: invalid input.
 2. Service: join OK delega a repos.
 3. Handler: status codes correctes.

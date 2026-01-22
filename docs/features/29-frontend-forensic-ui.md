@@ -15,6 +15,6 @@ Crear la UI de forensics per veure analisis de pistes.
 - Renderitza títol "Forensics".
 - Renderitza 3 targetes.
 
-## Pla de Tests (TDD)
+## Pla de Tests (Integracio)
 1. Renderitza títol.
 2. Renderitza 3 targetes.

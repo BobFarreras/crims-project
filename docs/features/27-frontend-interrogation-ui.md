@@ -18,6 +18,6 @@ Crear la UI d'interrogatori per mostrar preguntes i respostes.
 - Renderitza pregunta principal.
 - Renderitza 3 entrades d'historial.
 
-## Pla de Tests (TDD)
+## Pla de Tests (Integracio)
 1. Renderitza títol i pregunta.
 2. Renderitza 3 entrades d'historial.

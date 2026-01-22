@@ -16,6 +16,6 @@ Crear la UI de timeline per veure els esdeveniments ordenats.
 - Renderitza títol "Timeline".
 - Renderitza 3 events.
 
-## Pla de Tests (TDD)
+## Pla de Tests (Integracio)
 1. Renderitza títol.
 2. Renderitza 3 events.

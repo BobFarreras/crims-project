@@ -16,7 +16,7 @@ $f04 = @"
 * **Model:** `DialogueNode` { text, responses[], stress_effect }.
 * **Logic:** `CheckContradiction(statementID, evidenceID)`.
 
-## 4. TDD Plan
+## 4. Integration Plan
 - [ ] `TestPresentEvidence_ValidContradiction_IncreasesStress`
 - [ ] `TestDialogue_LockedOptions_UnlockWithFacts`
 "@
