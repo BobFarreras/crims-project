@@ -1,3 +1,4 @@
+"use client"
 import { Cormorant_Garamond, Crimson_Text } from 'next/font/google'
 import LobbyForm from '@/features/lobby/LobbyForm'
 
