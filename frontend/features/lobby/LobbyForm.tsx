@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 type LobbyFormProps = {
   roles: string[]
@@ -8,6 +9,7 @@ type LobbyFormProps = {
 }
 
 export default function LobbyForm({ roles, onSubmit }: LobbyFormProps) {
+  const router = useRouter()
   const [code, setCode] = useState('')
   const [role, setRole] = useState(roles[0] ?? '')
   const [userId, setUserId] = useState('')
@@ -21,6 +23,8 @@ export default function LobbyForm({ roles, onSubmit }: LobbyFormProps) {
     }
     setError('')
     onSubmit({ code, role, userId })
+    // Navigate to the Scene view after a successful join
+    router.push('/game/scene')
   }
 
   return (
