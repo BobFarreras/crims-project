@@ -89,6 +89,9 @@ SENTRY_ENVIRONMENT=production
 RATE_LIMIT_REQUESTS=100
 RATE_LIMIT_WINDOW=1m
 
+# CORS Configuration
+CORS_ALLOWED_ORIGINS=http://localhost:3000,https://crimsdemitjanit.com
+
 # ===============================
 # POCKETBASE ENVIRONMENT
 # ===============================
