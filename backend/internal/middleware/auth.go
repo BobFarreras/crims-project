@@ -2,12 +2,10 @@ package middleware
 
 import (
 	"context"
-	"fmt"
 	"net/http"
-	"os"
 	"strings"
 
-	"github.com/golang-jwt/jwt/v5"
+	"github.com/digitaistudios/crims-backend/internal/ports"
 )
 
 type contextKey string
@@ -17,41 +15,23 @@ const (
 	UserIDKey contextKey = "user_id"
 )
 
-// AuthMiddleware valida el JWT de PocketBase.
-func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
+// AuthMiddleware valida el JWT de PocketBase via cookie.
+func AuthMiddleware(pbClient ports.PocketBaseClient, next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		authHeader := r.Header.Get("Authorization")
-		if authHeader == "" {
+		cookie, err := r.Cookie("auth_token")
+		if err != nil || cookie.Value == "" {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 
-		// Format esperat: "Bearer <token>"
-		parts := strings.Split(authHeader, " ")
-		if len(parts) != 2 || parts[0] != "Bearer" {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-		tokenString := parts[1]
-
-		// Validar el token
-		claims, err := validateToken(tokenString)
+		authResp, err := pbClient.RefreshAuth(cookie.Value)
 		if err != nil {
-			// Token invàlid, caducat o signatura incorrecta
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 
-		// Extreure informació del token
-		userID, _ := claims["id"].(string)
-
-		// Intentem llegir el rol si ve al token (custom claim), sinó assumim "USER"
-		role, ok := claims["role"].(string)
-		if !ok || role == "" {
-			role = "USER"
-			// Nota: Si necessites rols específics de joc (DETECTIVE, etc.),
-			// hauràs de mirar la DB o afegir-ho als claims de PocketBase.
-		}
+		userID := authResp.Record.ID
+		role := "USER"
 
 		// Posem la informació segura al context
 		ctx := context.WithValue(r.Context(), UserIDKey, userID)
@@ -84,32 +64,4 @@ func RequireRole(roles ...string) func(http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 		})
 	}
-}
-
-// validateToken parseja i valida la signatura del JWT
-func validateToken(tokenString string) (jwt.MapClaims, error) {
-	secret := os.Getenv("JWT_SECRET")
-	if secret == "" {
-		// Fallback insegur només per dev si no està configurat, però avisant
-		// En producció això hauria de fallar fatalment.
-		return nil, fmt.Errorf("JWT_SECRET not configured")
-	}
-
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		// Validar l'algoritme de signatura (HMAC)
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
-		return []byte(secret), nil
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		return claims, nil
-	}
-
-	return nil, fmt.Errorf("invalid token")
 }
