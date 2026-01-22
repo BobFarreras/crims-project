@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from 'next/navigation'
 import LoginForm from './LoginForm'
-import { login as mockLogin } from '@/lib/infra/auth-client'
+// Uses real API endpoints now (Next.js API routes) for login
 import { useState } from 'react'
 
 export default function LoginFlow() {
@@ -10,14 +10,22 @@ export default function LoginFlow() {
 
   const onSubmit = async (payload: { username: string; password: string }) => {
     try {
-      // Call authentication client (mocked for now)
-      const res = await mockLogin(payload.username, payload.password)
-      // Persist token if needed (localStorage example)
-      if (typeof window !== 'undefined' && res?.token) {
-        localStorage.setItem('token', res.token)
+      // Call the real login API (mock backend in this dev setup)
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: payload.username, password: payload.password }),
+      })
+      if (!res.ok) {
+        throw new Error('Login failed')
       }
-      // Redirect to game dashboard after login
-      router.push('/game/dashboard')
+      const data = await res.json()
+      if (data.ok || data.token) {
+        // On success, navigate to dashboard. The token is stored as HttpOnly cookie by the backend.
+        router.push('/game/dashboard')
+      } else {
+        throw new Error('Login failed')
+      }
     } catch (e) {
       setError('Login failed')
     }
