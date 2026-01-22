@@ -2,7 +2,6 @@ package http
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/digitaistudios/crims-backend/internal/platform/web"
@@ -72,7 +71,10 @@ func (h *AuthHandler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 		web.RespondError(w, http.StatusBadRequest, "invalid request body", "auth/bad_request")
 		return
 	}
-	fmt.Printf("🔍 LOGIN INTENT: Email='%s'\n", req.Email)
+	if req.Email == "" || req.Password == "" {
+		web.RespondError(w, http.StatusBadRequest, "missing credentials", "auth/missing_credentials")
+		return
+	}
 	// Crida a PocketBase
 	authResp, err := h.pbClient.AuthWithPassword(req.Email, req.Password)
 	if err != nil {

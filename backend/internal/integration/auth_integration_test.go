@@ -109,3 +109,57 @@ func TestAuth_LoginFlow(t *testing.T) {
 		t.Fatalf("expected username %s, got %v", username, user["username"])
 	}
 }
+
+func TestAuth_LoginMissingCredentials(t *testing.T) {
+	baseURL := os.Getenv("PB_URL")
+	if baseURL == "" {
+		t.Skip("PB_URL not set")
+	}
+
+	pbClient, err := repo_pb.NewClient(repo_pb.Config{BaseURL: baseURL, Timeout: 5 * time.Second})
+	if err != nil {
+		t.Fatalf("create pb client: %v", err)
+	}
+
+	cfg, err := config.Load()
+	if err != nil {
+		t.Fatalf("load config: %v", err)
+	}
+
+	handler := apihttp.NewAuthHandler(pbClient, apihttp.AuthCookieConfig{
+		Secure:   cfg.AuthCookieSecure,
+		SameSite: cfg.AuthCookieSameSite,
+	})
+	router := chi.NewRouter()
+	apihttp.RegisterAuthRoutes(router, handler)
+
+	server := httptest.NewServer(router)
+	defer server.Close()
+
+	loginPayload := map[string]string{
+		"email":    "",
+		"password": "secret",
+	}
+	loginBody, err := json.Marshal(loginPayload)
+	if err != nil {
+		t.Fatalf("marshal login payload: %v", err)
+	}
+
+	loginResp, err := http.Post(server.URL+"/api/auth/login", "application/json", bytes.NewReader(loginBody))
+	if err != nil {
+		t.Fatalf("login request: %v", err)
+	}
+	defer loginResp.Body.Close()
+
+	if loginResp.StatusCode != http.StatusBadRequest {
+		t.Fatalf("expected status 400, got %d", loginResp.StatusCode)
+	}
+
+	var response map[string]interface{}
+	if err := json.NewDecoder(loginResp.Body).Decode(&response); err != nil {
+		t.Fatalf("decode login response: %v", err)
+	}
+	if response["code"] != "auth/missing_credentials" {
+		t.Fatalf("expected code auth/missing_credentials, got %v", response["code"])
+	}
+}

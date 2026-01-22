@@ -27,8 +27,8 @@ export function useLogin() {
       router.push('/game/dashboard');
     } catch (err) {
       console.error("❌ Error al login:", err);
-      // Missatge genèric de seguretat
-      setError('Credencials incorrectes.');
+      const message = err instanceof Error ? err.message : 'No hem pogut iniciar sessio.';
+      setError(message);
     } finally {
       setIsLoading(false);
     }
