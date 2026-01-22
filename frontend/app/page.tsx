@@ -19,7 +19,7 @@ export default function Home() {
   }, [])
   return (
     <div className={`${bodyFont.className} relative min-h-screen bg-amber-50 text-zinc-900`}>
-      <div className="bg-gradient-to-b from-amber-100 to-amber-200 absolute inset-0 -z-10 opacity-60" />
+      <div className="bg-linear-to-b from-amber-100 to-amber-200 absolute inset-0 -z-10 opacity-60" />
       <main className="relative mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-12 p-6 md:flex-row md:items-center md:justify-between md:p-12">
         <section className="flex-1 flex flex-col justify-center gap-6 md:max-w-lg">
           <span className="text-xs font-semibold uppercase tracking-[0.4em] text-amber-700">Crims de Mitjanit</span>
