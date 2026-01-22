@@ -174,3 +174,8 @@ func (d DisabledInterrogationRepository) GetInterrogationByID(ctx context.Contex
 func (d DisabledInterrogationRepository) ListInterrogationsByGame(ctx context.Context, gameID string) ([]ports.InterrogationRecord, error) {
 	return nil, d.Err
 }
+
+// AFEGEIX AQUEST MÈTODE AL FINAL DE TOT
+func (d DisabledPocketBaseClient) CreateUser(username, email, password, passwordConfirm, name string) error {
+	return d.Err
+}

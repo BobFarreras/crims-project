@@ -1,7 +1,9 @@
 package repo_pb
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -71,6 +73,44 @@ func (c *Client) Ping(ctx context.Context) error {
 
 	if response.StatusCode != http.StatusOK {
 		return fmt.Errorf("%w: status %d", ErrUnexpectedStatus, response.StatusCode)
+	}
+
+	return nil
+}
+
+// Afegeix això al final de client.go (o dins del mètode)
+
+func (c *Client) CreateUser(username, email, password, passwordConfirm, name string) error {
+	payload := map[string]string{
+		"username":        username,
+		"email":           email,
+		"password":        password,
+		"passwordConfirm": passwordConfirm,
+		"name":            name,
+	}
+
+	// Nota: PocketBase requereix Content-Type: application/json
+	// Implementació simplificada: usa el teu client HTTP per fer POST a /api/collections/users/records
+	// (Aquest codi és un exemple, adapta'l si tens helpers com c.postJSON)
+	// 🔥 DEBUG: Anem a veure on estem disparant!
+	targetURL := c.baseURL + "/api/collections/users/records"
+	fmt.Println("📢 INTENTANT CONNECTAR AMB POCKETBASE A:", targetURL)
+	body, _ := json.Marshal(payload)
+	req, err := http.NewRequest(http.MethodPost, c.baseURL+"/api/collections/users/records", bytes.NewBuffer(body))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		// Podries llegir el body per retornar l'error exacte de PB
+		return fmt.Errorf("failed to create user, status: %d", resp.StatusCode)
 	}
 
 	return nil

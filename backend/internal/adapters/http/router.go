@@ -15,6 +15,14 @@ func RegisterAPIV1Routes(r chi.Router, register func(r chi.Router)) {
 	})
 }
 
+// 🔥 NOU: Registre de rutes d'autenticació
+func RegisterAuthRoutes(r chi.Router, handler *AuthHandler) {
+	r.Route("/api/auth", func(r chi.Router) {
+		r.Post("/register", handler.HandleRegister)
+		r.Post("/login", handler.HandleLogin)
+	})
+}
+
 func RegisterMetricsRoutes(r chi.Router) {
 	r.Get("/metrics", NewMetricsHandler())
 }

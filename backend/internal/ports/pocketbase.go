@@ -6,4 +6,6 @@ import "context"
 // Ha de ser substituible si canviem a Supabase.
 type PocketBaseClient interface {
 	Ping(ctx context.Context) error
+	// NOU MÈTODE
+	CreateUser(username, email, password, passwordConfirm, name string) error
 }
