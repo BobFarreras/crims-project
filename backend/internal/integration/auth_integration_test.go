@@ -13,6 +13,7 @@ import (
 
 	apihttp "github.com/digitaistudios/crims-backend/internal/adapters/http"
 	"github.com/digitaistudios/crims-backend/internal/adapters/repo_pb"
+	"github.com/digitaistudios/crims-backend/internal/platform/config"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -27,7 +28,15 @@ func TestAuth_LoginFlow(t *testing.T) {
 		t.Fatalf("create pb client: %v", err)
 	}
 
-	handler := apihttp.NewAuthHandler(pbClient)
+	cfg, err := config.Load()
+	if err != nil {
+		t.Fatalf("load config: %v", err)
+	}
+
+	handler := apihttp.NewAuthHandler(pbClient, apihttp.AuthCookieConfig{
+		Secure:   cfg.AuthCookieSecure,
+		SameSite: cfg.AuthCookieSameSite,
+	})
 	router := chi.NewRouter()
 	apihttp.RegisterAuthRoutes(router, handler)
 

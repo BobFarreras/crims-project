@@ -23,9 +23,9 @@
     * `HypothesisNode`: Contenidor (Parent Node). Canvia de color segons l'estat (Gris -> Groc -> Verd).
 * **Interacció:**
     * `onConnect`: Obre un petit menú contextual per triar tipus de relació (Supports/Contradicts).
-* **Role Gating:**
-    * Només el rol **Analista** pot crear Hipòtesis i validar-les.
-    * La resta de rols poden moure nodes i proposar connexions (que queden "pendents" fins que l'Analista confirma - Opcional V2).
+* **Capability Gating:**
+    * Només la capacitat **Analyst** pot crear Hipòtesis i validar-les.
+    * La resta de jugadors poden moure nodes i proposar connexions (que queden "pendents" fins que l'Analyst confirma - Opcional V2).
 
 ### B. Backend (Go API)
 * **Endpoint:** `POST /api/board/connect`

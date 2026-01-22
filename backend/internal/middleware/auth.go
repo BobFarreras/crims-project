@@ -11,8 +11,8 @@ import (
 type contextKey string
 
 const (
-	RoleKey   contextKey = "role"
-	UserIDKey contextKey = "user_id"
+	CapabilityKey contextKey = "capabilities"
+	UserIDKey     contextKey = "user_id"
 )
 
 // AuthMiddleware valida el JWT de PocketBase via cookie.
@@ -31,32 +31,38 @@ func AuthMiddleware(pbClient ports.PocketBaseClient, next http.HandlerFunc) http
 		}
 
 		userID := authResp.Record.ID
-		role := "USER"
+		capabilities := []string{}
 
 		// Posem la informació segura al context
 		ctx := context.WithValue(r.Context(), UserIDKey, userID)
-		ctx = context.WithValue(ctx, RoleKey, role)
+		ctx = context.WithValue(ctx, CapabilityKey, capabilities)
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	}
 }
 
-// RequireRole garanteix que el rol (validat pel token) està autoritzat.
-func RequireRole(roles ...string) func(http.Handler) http.Handler {
+// RequireCapability garanteix que la capacitat està autoritzada.
+func RequireCapability(capabilities ...string) func(http.Handler) http.Handler {
 	allowed := map[string]struct{}{}
-	for _, role := range roles {
-		allowed[strings.ToUpper(role)] = struct{}{}
+	for _, capability := range capabilities {
+		allowed[strings.ToUpper(capability)] = struct{}{}
 	}
 
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			// Ara el rol ve del context segur (JWT), no de la capçalera HTTP
-			role, _ := r.Context().Value(RoleKey).(string)
-			if role == "" {
+			stored, _ := r.Context().Value(CapabilityKey).([]string)
+			if len(stored) == 0 {
 				w.WriteHeader(http.StatusForbidden)
 				return
 			}
-			if _, ok := allowed[strings.ToUpper(role)]; !ok {
+			allowedMatch := false
+			for _, capability := range stored {
+				if _, ok := allowed[strings.ToUpper(capability)]; ok {
+					allowedMatch = true
+					break
+				}
+			}
+			if !allowedMatch {
 				w.WriteHeader(http.StatusForbidden)
 				return
 			}

@@ -28,7 +28,7 @@ export default function Home() {
             Join the investigation and shape the night.
           </h1>
           <p className="text-lg leading-7 text-zinc-700">
-            Entrar un código de juego, elegir un rol y sumergirse en un caso en vivo. Cada pista cambia la historia.
+            Entrar un código de juego, elegir capacidades y sumergirse en un caso en vivo. Cada pista cambia la historia.
           </p>
           
           {/* ✅ CORRECCIÓ AQUI: Treure <a> i posar className al Link */}
@@ -50,7 +50,7 @@ export default function Home() {
         </section>
         <section className="w-full max-w-md rounded-3xl border border-amber-100 bg-white/90 p-6 shadow-xl md:ml-0 md:flex-1">
           <LobbyForm
-            roles={["DETECTIVE", "FORENSIC", "ANALYST", "INTERROGATOR"]}
+            capabilities={["DETECTIVE", "FORENSIC", "ANALYST", "INTERROGATOR"]}
             onSubmit={() => undefined}
           />
         </section>

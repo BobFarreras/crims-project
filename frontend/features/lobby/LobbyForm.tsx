@@ -3,13 +3,13 @@
 import { useState } from 'react'
 
 type LobbyFormProps = {
-  roles: string[]
-  onSubmit: (payload: { code: string; role: string; userId: string }) => void
+  capabilities: string[]
+  onSubmit: (payload: { code: string; capabilities: string[]; userId: string }) => void
 }
 
-export default function LobbyForm({ roles, onSubmit }: LobbyFormProps) {
+export default function LobbyForm({ capabilities, onSubmit }: LobbyFormProps) {
   const [code, setCode] = useState('')
-  const [role, setRole] = useState(roles[0] ?? '')
+  const [selectedCapabilities, setSelectedCapabilities] = useState<string[]>([])
   const [userId, setUserId] = useState('')
   const [error, setError] = useState('')
 
@@ -20,7 +20,15 @@ export default function LobbyForm({ roles, onSubmit }: LobbyFormProps) {
       return
     }
     setError('')
-    onSubmit({ code, role, userId })
+    onSubmit({ code, capabilities: selectedCapabilities, userId })
+  }
+
+  const toggleCapability = (capability: string) => {
+    setSelectedCapabilities((current) =>
+      current.includes(capability)
+        ? current.filter((item) => item !== capability)
+        : [...current, capability]
+    )
   }
 
   return (
@@ -53,24 +61,26 @@ export default function LobbyForm({ roles, onSubmit }: LobbyFormProps) {
         />
       </div>
 
-      <div className="flex flex-col gap-2">
-        <label className="text-sm font-semibold uppercase tracking-wide text-zinc-700" htmlFor="role">
-          Role
-        </label>
-        <select
-          id="role"
-          name="role"
-          value={role}
-          onChange={(event) => setRole(event.target.value)}
-          className="h-12 rounded-xl border border-zinc-200 bg-white px-4 text-base text-zinc-900 shadow-sm focus:border-amber-400 focus:outline-none"
-        >
-          {roles.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
+      <fieldset className="flex flex-col gap-3" aria-label="Capabilities">
+        <legend className="text-sm font-semibold uppercase tracking-wide text-zinc-700">
+          Capabilities
+        </legend>
+        <div className="grid gap-2 sm:grid-cols-2">
+          {capabilities.map((option) => (
+            <label key={option} className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm font-semibold text-zinc-800 shadow-sm">
+              <input
+                type="checkbox"
+                name="capabilities"
+                value={option}
+                checked={selectedCapabilities.includes(option)}
+                onChange={() => toggleCapability(option)}
+                className="h-4 w-4 rounded border-zinc-300 text-amber-500 focus:ring-amber-500"
+              />
+              <span>{option}</span>
+            </label>
           ))}
-        </select>
-      </div>
+        </div>
+      </fieldset>
 
       {error ? (
         <p className="text-sm font-semibold text-red-600" role="alert" aria-live="polite">

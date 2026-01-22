@@ -9,7 +9,7 @@ import (
 )
 
 type fakePlayerRepository struct {
-	lastCreate ports.PlayerRecordInput
+	lastCreate   ports.PlayerRecordInput
 	createResult ports.PlayerRecord
 	createErr    error
 	listResult   []ports.PlayerRecord
@@ -49,10 +49,10 @@ func TestPlayerService_CreatePlayer_OK(t *testing.T) {
 	service := NewPlayerService(repo)
 
 	result, err := service.CreatePlayer(context.Background(), ports.PlayerRecordInput{
-		GameID: "game-1",
-		UserID: "user-1",
-		Role:   "DETECTIVE",
-		Status: "ONLINE",
+		GameID:       "game-1",
+		UserID:       "user-1",
+		Capabilities: []string{"DETECTIVE"},
+		Status:       "ONLINE",
 	})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)

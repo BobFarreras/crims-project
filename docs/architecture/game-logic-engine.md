@@ -17,6 +17,7 @@ Variable: `CASE_STATE` (Enum).
 * **Clue:** `{ id, type, reliability (0-100), state (DISCOVERED/ANALYZED), facts[] }`
 * **Person:** `{ id, officialStory, truthStory, stress (0-100), credibility }`
 * **Event:** `{ id, timestamp, locationId, participants[] }`
+* **Player:** `{ id, userId, gameId, capabilities[], status, isHost }`
 
 ### B. Logic Structures (Nodes de Deducció)
 * **Hypothesis:**

@@ -25,15 +25,21 @@ El joc no és lineal, el jugador salta entre aquestes fases:
 * **Acció "Press":** Presentar una prova que contradiu el testimoni.
 * **Resultat:** Si l'estrès puja massa, el testimoni pot tancar-se o confessar (Breakdown).
 
-## 2. Rols Multijugador (Co-op Asimètric)
-Cada jugador té superpoders únics:
+## 2. Capacitats Multijugador (Co-op Asimètric)
+Les habilitats són **capacitats**, no rols únics. Un jugador pot tenir 1 o més capacitats segons el mode.
 
-| Rol | Habilitat Especial | Bonus |
+| Capacitat | Habilitat Especial | Bonus |
 | :--- | :--- | :--- |
 | **Detectiu de Camp** | Veu Hotspots ocults a l'escena 3D | Velocitat exploració |
 | **Forense** | Pot fer l'acció "Analitzar" al Lab | +Fiabilitat pistes |
 | **Analista** | Pot crear Hipòtesis al Tauler | Detecta contradiccions auto. |
 | **Interrogador** | Desbloqueja opcions de diàleg "Pressió" | Detecta mentides (Stress) |
+
+### Modes de partida
+- **Solo (1 jugador):** 4 capacitats en un sol jugador.
+- **Duo (2 jugadors):** 2 capacitats per jugador.
+- **Equip (3-4 jugadors):** 1 capacitat per jugador.
+- **Grup gran (5-8 jugadors):** 4 capacitats principals + assistents sense bonus.
 
 ## 3. Flux Final (Acusació)
 Per guanyar, cal omplir el formulari final:

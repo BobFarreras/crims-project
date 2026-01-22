@@ -26,11 +26,11 @@ func NewPlayerRepository(client *Client) *PlayerRepository {
 
 func (p *PlayerRepository) CreatePlayer(ctx context.Context, input PlayerRecordInput) (PlayerRecord, error) {
 	payload, err := json.Marshal(map[string]interface{}{
-		"gameId": input.GameID,
-		"userId": input.UserID,
-		"role":   input.Role,
-		"status": input.Status,
-		"isHost": input.IsHost,
+		"gameId":       input.GameID,
+		"userId":       input.UserID,
+		"capabilities": input.Capabilities,
+		"status":       input.Status,
+		"isHost":       input.IsHost,
 	})
 	if err != nil {
 		return PlayerRecord{}, err

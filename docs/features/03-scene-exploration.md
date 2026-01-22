@@ -18,6 +18,6 @@ $f03 = @"
 
 ## 4. Integration Plan
 - [ ] `TestCollectClue_AddsToInventory`
-- [ ] `TestGetScene_FiltersHotspotsByRole`
+- [ ] `TestGetScene_FiltersHotspotsByCapability`
 "@
 Set-Content -Path "docs\features\03-scene-exploration.md" -Value $f03 -Encoding UTF8

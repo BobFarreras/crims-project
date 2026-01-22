@@ -15,7 +15,7 @@ type fakeLobbyService struct {
 	joinErr    error
 }
 
-func (f fakeLobbyService) JoinGame(ctx context.Context, gameCode, userID, role string) (ports.PlayerRecord, error) {
+func (f fakeLobbyService) JoinGame(ctx context.Context, gameCode, userID string, capabilities []string) (ports.PlayerRecord, error) {
 	if f.joinErr != nil {
 		return ports.PlayerRecord{}, f.joinErr
 	}
@@ -30,7 +30,7 @@ func TestLobbyJoinHandler_OK(t *testing.T) {
 	service := fakeLobbyService{joinResult: ports.PlayerRecord{ID: "player-1"}}
 	handler := NewLobbyJoinHandler(service)
 
-	payload := []byte(`{"gameCode":"ABCD","userId":"user-1","role":"DETECTIVE"}`)
+	payload := []byte(`{"gameCode":"ABCD","userId":"user-1","capabilities":["DETECTIVE"]}`)
 	request := httptest.NewRequest(http.MethodPost, "/api/lobby/join", bytes.NewReader(payload))
 	response := httptest.NewRecorder()
 

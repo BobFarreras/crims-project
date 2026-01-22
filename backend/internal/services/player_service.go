@@ -20,7 +20,7 @@ func NewPlayerService(repo ports.PlayerRepository) *PlayerService {
 }
 
 func (s *PlayerService) CreatePlayer(ctx context.Context, input ports.PlayerRecordInput) (ports.PlayerRecord, error) {
-	if input.GameID == "" || input.UserID == "" || input.Role == "" || input.Status == "" {
+	if input.GameID == "" || input.UserID == "" || input.Status == "" {
 		return ports.PlayerRecord{}, ErrInvalidPlayerInput
 	}
 

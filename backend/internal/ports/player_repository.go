@@ -9,18 +9,18 @@ type PlayerRepository interface {
 }
 
 type PlayerRecordInput struct {
-	GameID string
-	UserID string
-	Role   string
-	Status string
-	IsHost bool
+	GameID       string
+	UserID       string
+	Capabilities []string
+	Status       string
+	IsHost       bool
 }
 
 type PlayerRecord struct {
-	ID     string
-	GameID string
-	UserID string
-	Role   string
-	Status string
-	IsHost bool
+	ID           string
+	GameID       string
+	UserID       string
+	Capabilities []string
+	Status       string
+	IsHost       bool
 }

@@ -7,8 +7,8 @@ import (
 	"testing"
 )
 
-func TestRequireRole_NoRole(t *testing.T) {
-	handler := RequireRole("DETECTIVE")(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func TestRequireCapability_NoCapability(t *testing.T) {
+	handler := RequireCapability("DETECTIVE")(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
 
@@ -22,13 +22,13 @@ func TestRequireRole_NoRole(t *testing.T) {
 	}
 }
 
-func TestRequireRole_NotAllowed(t *testing.T) {
-	handler := RequireRole("FORENSIC")(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func TestRequireCapability_NotAllowed(t *testing.T) {
+	handler := RequireCapability("FORENSIC")(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
 
 	request := httptest.NewRequest(http.MethodGet, "/secure", nil)
-	request = request.WithContext(context.WithValue(request.Context(), RoleKey, "DETECTIVE"))
+	request = request.WithContext(context.WithValue(request.Context(), CapabilityKey, []string{"DETECTIVE"}))
 	response := httptest.NewRecorder()
 
 	handler.ServeHTTP(response, request)
@@ -38,13 +38,13 @@ func TestRequireRole_NotAllowed(t *testing.T) {
 	}
 }
 
-func TestRequireRole_Allowed(t *testing.T) {
-	handler := RequireRole("DETECTIVE", "FORENSIC")(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func TestRequireCapability_Allowed(t *testing.T) {
+	handler := RequireCapability("DETECTIVE", "FORENSIC")(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
 
 	request := httptest.NewRequest(http.MethodGet, "/secure", nil)
-	request = request.WithContext(context.WithValue(request.Context(), RoleKey, "FORENSIC"))
+	request = request.WithContext(context.WithValue(request.Context(), CapabilityKey, []string{"FORENSIC"}))
 	response := httptest.NewRecorder()
 
 	handler.ServeHTTP(response, request)

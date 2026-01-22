@@ -20,8 +20,8 @@ func NewLobbyService(gameRepo ports.GameRepository, playerRepo ports.PlayerRepos
 	return &LobbyService{gameRepo: gameRepo, playerRepo: playerRepo}
 }
 
-func (s *LobbyService) JoinGame(ctx context.Context, gameCode, userID, role string) (ports.PlayerRecord, error) {
-	if gameCode == "" || userID == "" || role == "" {
+func (s *LobbyService) JoinGame(ctx context.Context, gameCode, userID string, capabilities []string) (ports.PlayerRecord, error) {
+	if gameCode == "" || userID == "" {
 		return ports.PlayerRecord{}, ErrInvalidLobbyInput
 	}
 
@@ -31,11 +31,11 @@ func (s *LobbyService) JoinGame(ctx context.Context, gameCode, userID, role stri
 	}
 
 	return s.playerRepo.CreatePlayer(ctx, ports.PlayerRecordInput{
-		GameID: game.ID,
-		UserID: userID,
-		Role:   role,
-		Status: "ONLINE",
-		IsHost: false,
+		GameID:       game.ID,
+		UserID:       userID,
+		Capabilities: capabilities,
+		Status:       "ONLINE",
+		IsHost:       false,
 	})
 }
 

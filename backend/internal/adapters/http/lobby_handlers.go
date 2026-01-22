@@ -11,9 +11,9 @@ import (
 )
 
 type lobbyJoinRequest struct {
-	GameCode string `json:"gameCode"`
-	UserID   string `json:"userId"`
-	Role     string `json:"role"`
+	GameCode     string   `json:"gameCode"`
+	UserID       string   `json:"userId"`
+	Capabilities []string `json:"capabilities"`
 }
 
 func NewLobbyJoinHandler(service ports.LobbyService) http.HandlerFunc {
@@ -24,7 +24,7 @@ func NewLobbyJoinHandler(service ports.LobbyService) http.HandlerFunc {
 			return
 		}
 
-		result, err := service.JoinGame(r.Context(), payload.GameCode, payload.UserID, payload.Role)
+		result, err := service.JoinGame(r.Context(), payload.GameCode, payload.UserID, payload.Capabilities)
 		if err != nil {
 			if errors.Is(err, services.ErrInvalidLobbyInput) {
 				web.RespondError(w, http.StatusBadRequest, "missing fields", "missing_fields")
