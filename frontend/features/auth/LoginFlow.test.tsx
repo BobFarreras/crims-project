@@ -2,10 +2,14 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import LoginFlow from './LoginFlow'
 
-vi.mock('../../lib/infra/auth-client', () => ({
-  login: vi.fn(() => Promise.resolve({ token: 'tok', userId: 'u1' }))
-}))
-vi.mock('next/navigation', () => ({ useRouter: () => ({ push: vi.fn() }) }))
+vi.stubGlobal('fetch', async () => {
+  return {
+    ok: true,
+    json: async () => ({ ok: true, token: 'mock' }),
+  } as Response
+})
+const pushMock = vi.fn()
+vi.mock('next/navigation', () => ({ useRouter: () => ({ push: pushMock }) }))
 
 describe('LoginFlow', () => {
   it('renders login form and submits successfully', async () => {
@@ -18,7 +22,7 @@ describe('LoginFlow', () => {
     fireEvent.change(passInput, { target: { value: 'secret' } })
     fireEvent.click(loginBtn)
 
-    // Expect login to be called; navigation is mocked
-    await waitFor(() => expect(require('../../lib/infra/auth-client').login).toHaveBeenCalled())
+    // Expect navigation to be called after login
+    await waitFor(() => expect(pushMock).toHaveBeenCalled())
   })
 })
