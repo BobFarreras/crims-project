@@ -1,31 +1,24 @@
 "use client";
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import RegisterForm from './RegisterForm'
+import { useRegister } from '../hooks/useRegister'; // Importem el Hook nou
+import RegisterForm from '../components/RegisterForm'; // Assegura't que la ruta és correcta
 
 export default function RegisterFlow() {
-  const router = useRouter()
-  const [error, setError] = useState<string | null>(null)
-
-  const onSubmit = async (payload: { username: string; password: string }) => {
-    try {
-      const res = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      })
-      if (!res.ok) throw new Error('Register failed')
-      // After successful registration, navigate to login
-      router.push('/login')
-  } catch {
-      setError('Register failed')
-    }
-  }
+  // Usem el hook que vam crear abans, que crida a authService -> Go Backend
+  const { register, error, isLoading } = useRegister();
 
   return (
     <div>
-      {error ? <p className="text-sm font-semibold text-red-600" aria-live="polite">{error}</p> : null}
-      <RegisterForm onSubmit={onSubmit} />
+      {error ? (
+        <div className="mb-4 rounded bg-red-100 p-3 text-sm font-bold text-red-600">
+          {error}
+        </div>
+      ) : null}
+      
+      {/* Passem les dades directament a la funció register del hook */}
+      <RegisterForm 
+        onSubmit={(data) => register(data)} 
+        isLoading={isLoading}
+      />
     </div>
   )
 }

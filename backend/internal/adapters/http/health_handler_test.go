@@ -19,6 +19,11 @@ func (f fakePocketBaseClient) Ping(ctx context.Context) error {
 	return f.err
 }
 
+// AFEGEIX AQUEST MÈTODE NOU PER SATISFER LA INTERFÍCIE
+func (f fakePocketBaseClient) CreateUser(username, email, password, passwordConfirm, name string) error {
+	return f.err
+}
+
 func TestHealthHandler_OK(t *testing.T) {
 	handler := NewHealthHandler(fakePocketBaseClient{})
 

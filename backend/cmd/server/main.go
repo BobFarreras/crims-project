@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"context"
 	"log"
 	"net/http"
 	"os"
@@ -24,23 +24,171 @@ import (
 	"github.com/go-chi/cors"
 )
 
+// --- MOCKS FOR DISABLED POCKETBASE (Mantinguts per seguretat) ---
+type disabledPocketBaseClient struct{ err error }
+
+func (d disabledPocketBaseClient) Ping(ctx context.Context) error { return d.err }
+func (d disabledPocketBaseClient) CreateUser(username, email, password, passwordConfirm, name string) error {
+	return d.err
+} // NOU MÈTODE
+
+type disabledGameRepository struct{ err error }
+
+func (d disabledGameRepository) CreateGame(ctx context.Context, input ports.GameRecordInput) (ports.GameRecord, error) {
+	return ports.GameRecord{}, d.err
+}
+func (d disabledGameRepository) GetGameByID(ctx context.Context, id string) (ports.GameRecord, error) {
+	return ports.GameRecord{}, d.err
+}
+func (d disabledGameRepository) GetGameByCode(ctx context.Context, code string) (ports.GameRecord, error) {
+	return ports.GameRecord{}, d.err
+}
+
+type disabledPlayerRepository struct{ err error }
+
+func (d disabledPlayerRepository) CreatePlayer(ctx context.Context, input ports.PlayerRecordInput) (ports.PlayerRecord, error) {
+	return ports.PlayerRecord{}, d.err
+}
+func (d disabledPlayerRepository) GetPlayerByID(ctx context.Context, id string) (ports.PlayerRecord, error) {
+	return ports.PlayerRecord{}, d.err
+}
+func (d disabledPlayerRepository) ListPlayersByGame(ctx context.Context, gameID string) ([]ports.PlayerRecord, error) {
+	return nil, d.err
+}
+
+type disabledEventRepository struct{ err error }
+
+func (d disabledEventRepository) CreateEvent(ctx context.Context, input ports.EventRecordInput) (ports.EventRecord, error) {
+	return ports.EventRecord{}, d.err
+}
+func (d disabledEventRepository) GetEventByID(ctx context.Context, id string) (ports.EventRecord, error) {
+	return ports.EventRecord{}, d.err
+}
+func (d disabledEventRepository) ListEventsByGame(ctx context.Context, gameID string) ([]ports.EventRecord, error) {
+	return nil, d.err
+}
+
+type disabledClueRepository struct{ err error }
+
+func (d disabledClueRepository) CreateClue(ctx context.Context, input ports.ClueRecordInput) (ports.ClueRecord, error) {
+	return ports.ClueRecord{}, d.err
+}
+func (d disabledClueRepository) GetClueByID(ctx context.Context, id string) (ports.ClueRecord, error) {
+	return ports.ClueRecord{}, d.err
+}
+func (d disabledClueRepository) ListCluesByGame(ctx context.Context, gameID string) ([]ports.ClueRecord, error) {
+	return nil, d.err
+}
+
+type disabledPersonRepository struct{ err error }
+
+func (d disabledPersonRepository) CreatePerson(ctx context.Context, input ports.PersonRecordInput) (ports.PersonRecord, error) {
+	return ports.PersonRecord{}, d.err
+}
+func (d disabledPersonRepository) GetPersonByID(ctx context.Context, id string) (ports.PersonRecord, error) {
+	return ports.PersonRecord{}, d.err
+}
+func (d disabledPersonRepository) ListPersonsByGame(ctx context.Context, gameID string) ([]ports.PersonRecord, error) {
+	return nil, d.err
+}
+
+type disabledHypothesisRepository struct{ err error }
+
+func (d disabledHypothesisRepository) CreateHypothesis(ctx context.Context, input ports.HypothesisRecordInput) (ports.HypothesisRecord, error) {
+	return ports.HypothesisRecord{}, d.err
+}
+func (d disabledHypothesisRepository) GetHypothesisByID(ctx context.Context, id string) (ports.HypothesisRecord, error) {
+	return ports.HypothesisRecord{}, d.err
+}
+func (d disabledHypothesisRepository) ListHypothesesByGame(ctx context.Context, gameID string) ([]ports.HypothesisRecord, error) {
+	return nil, d.err
+}
+
+type disabledAccusationRepository struct{ err error }
+
+func (d disabledAccusationRepository) CreateAccusation(ctx context.Context, input ports.AccusationRecordInput) (ports.AccusationRecord, error) {
+	return ports.AccusationRecord{}, d.err
+}
+func (d disabledAccusationRepository) GetAccusationByID(ctx context.Context, id string) (ports.AccusationRecord, error) {
+	return ports.AccusationRecord{}, d.err
+}
+func (d disabledAccusationRepository) ListAccusationsByGame(ctx context.Context, gameID string) ([]ports.AccusationRecord, error) {
+	return nil, d.err
+}
+
+type disabledForensicRepository struct{ err error }
+
+func (d disabledForensicRepository) CreateAnalysis(ctx context.Context, input ports.ForensicRecordInput) (ports.ForensicRecord, error) {
+	return ports.ForensicRecord{}, d.err
+}
+func (d disabledForensicRepository) GetAnalysisByID(ctx context.Context, id string) (ports.ForensicRecord, error) {
+	return ports.ForensicRecord{}, d.err
+}
+func (d disabledForensicRepository) ListAnalysesByGame(ctx context.Context, gameID string) ([]ports.ForensicRecord, error) {
+	return nil, d.err
+}
+
+type disabledTimelineRepository struct{ err error }
+
+func (d disabledTimelineRepository) CreateEntry(ctx context.Context, input ports.TimelineRecordInput) (ports.TimelineRecord, error) {
+	return ports.TimelineRecord{}, d.err
+}
+func (d disabledTimelineRepository) GetEntryByID(ctx context.Context, id string) (ports.TimelineRecord, error) {
+	return ports.TimelineRecord{}, d.err
+}
+func (d disabledTimelineRepository) ListEntriesByGame(ctx context.Context, gameID string) ([]ports.TimelineRecord, error) {
+	return nil, d.err
+}
+
+type disabledInterrogationRepository struct{ err error }
+
+func (d disabledInterrogationRepository) CreateInterrogation(ctx context.Context, input ports.InterrogationRecordInput) (ports.InterrogationRecord, error) {
+	return ports.InterrogationRecord{}, d.err
+}
+func (d disabledInterrogationRepository) GetInterrogationByID(ctx context.Context, id string) (ports.InterrogationRecord, error) {
+	return ports.InterrogationRecord{}, d.err
+}
+func (d disabledInterrogationRepository) ListInterrogationsByGame(ctx context.Context, gameID string) ([]ports.InterrogationRecord, error) {
+	return nil, d.err
+}
+
 func main() {
-	// 1. Càrrega de Configuració i Entorn
-	loadEnv()
+	// 1. Càrrega d'entorn
+	err := godotenv.Load("../.env.local")
+	if err != nil {
+		err = godotenv.Load(".env")
+		if err != nil {
+			log.Printf("⚠️  Warning: No s'ha pogut carregar .env: %v", err)
+		} else {
+			log.Println("✅ Carregat .env")
+		}
+	} else {
+		log.Println("✅ Carregat .env.local")
+	}
+
+	// 2. Configuració
 	cfg, cfgErr := config.Load()
 	if cfgErr != nil {
 		log.Fatalf("❌ Error configuracio: %v", cfgErr)
 	}
 
-	// 2. Inicialització de Sentry
-	initSentry(cfg)
+	// 3. Sentry
+	sentryErr := sentry.Init(sentry.ClientOptions{
+		Dsn:              os.Getenv("SENTRY_DSN"),
+		Environment:      cfg.Environment,
+		TracesSampleRate: 0.1,
+	})
+	if sentryErr != nil {
+		log.Printf("⚠️  Sentry init failed: %v", sentryErr)
+	} else {
+		log.Println("✅ Sentry inicialitzat correctament")
+	}
 	defer sentry.Flush(2 * time.Second)
 
-	// 3. Setup Logger
 	logger := middleware.SetupLogger()
 	logger.Info("🔌 Inicialitzant Crims de Mitjanit Backend...")
 
-	// 4. Inicialització de Repositoris (PocketBase)
+	// 4. Repositoris
 	var (
 		pocketBaseClient        ports.PocketBaseClient
 		gameRepository          ports.GameRepository
@@ -53,27 +201,26 @@ func main() {
 		forensicRepository      ports.ForensicRepository
 		timelineRepository      ports.TimelineRepository
 		interrogationRepository ports.InterrogationRepository
+		lobbyService            ports.LobbyService
 	)
 
 	pbClient, pbErr := repo_pb.NewClient(repo_pb.Config{
 		BaseURL: cfg.PocketBaseURL,
 		Timeout: cfg.PocketBaseTimeout,
 	})
-
 	if pbErr != nil {
 		logger.Warn("PocketBase client disabled", "error", pbErr)
-		// Usem les implementacions "Disabled" (netejades del main)
-		pocketBaseClient = repo_pb.DisabledPocketBaseClient{Err: pbErr}
-		gameRepository = repo_pb.DisabledGameRepository{Err: pbErr}
-		playerRepository = repo_pb.DisabledPlayerRepository{Err: pbErr}
-		eventRepository = repo_pb.DisabledEventRepository{Err: pbErr}
-		clueRepository = repo_pb.DisabledClueRepository{Err: pbErr}
-		personRepository = repo_pb.DisabledPersonRepository{Err: pbErr}
-		hypothesisRepository = repo_pb.DisabledHypothesisRepository{Err: pbErr}
-		accusationRepository = repo_pb.DisabledAccusationRepository{Err: pbErr}
-		forensicRepository = repo_pb.DisabledForensicRepository{Err: pbErr}
-		timelineRepository = repo_pb.DisabledTimelineRepository{Err: pbErr}
-		interrogationRepository = repo_pb.DisabledInterrogationRepository{Err: pbErr}
+		pocketBaseClient = disabledPocketBaseClient{err: pbErr}
+		gameRepository = disabledGameRepository{err: pbErr}
+		playerRepository = disabledPlayerRepository{err: pbErr}
+		eventRepository = disabledEventRepository{err: pbErr}
+		clueRepository = disabledClueRepository{err: pbErr}
+		personRepository = disabledPersonRepository{err: pbErr}
+		hypothesisRepository = disabledHypothesisRepository{err: pbErr}
+		accusationRepository = disabledAccusationRepository{err: pbErr}
+		forensicRepository = disabledForensicRepository{err: pbErr}
+		timelineRepository = disabledTimelineRepository{err: pbErr}
+		interrogationRepository = disabledInterrogationRepository{err: pbErr}
 	} else {
 		pocketBaseClient = pbClient
 		gameRepository = repo_pb.NewGameRepository(pbClient)
@@ -88,7 +235,7 @@ func main() {
 		interrogationRepository = repo_pb.NewInterrogationRepository(pbClient)
 	}
 
-	// 5. Inicialització de Serveis
+	// 5. Serveis
 	gameService := services.NewGameService(gameRepository)
 	playerService := services.NewPlayerService(playerRepository)
 	eventService := services.NewEventService(eventRepository)
@@ -99,12 +246,14 @@ func main() {
 	forensicService := services.NewForensicService(forensicRepository)
 	timelineService := services.NewTimelineService(timelineRepository)
 	interrogationService := services.NewInterrogationService(interrogationRepository)
-	lobbyService := services.NewLobbyService(gameRepository, playerRepository)
+	lobbyService = services.NewLobbyService(gameRepository, playerRepository)
 
-	// 6. Setup Router
+	// 🔥 NOU: Inicialitzar AuthHandler
+	authHandler := apihttp.NewAuthHandler(pocketBaseClient)
+
+	// 6. Router
 	r := chi.NewRouter()
 
-	// Middlewares
 	r.Use(sentryhttp.New(sentryhttp.Options{Repanic: true}).Handle)
 	r.Use(chimiddleware.Recoverer)
 	r.Use(middleware.RequestLogger(logger))
@@ -121,17 +270,21 @@ func main() {
 		w.Write([]byte("🕵️‍♂️ Backend Operatiu amb Logs i Seguretat"))
 	})
 
+	// 🔥 IMPORTANT: REGISTRAR RUTES D'AUTH AQUÍ
+	// Això farà que /api/auth/register funcioni
+	apihttp.RegisterAuthRoutes(r, authHandler)
+
+	// Rutes de l'API v1
 	apihttp.RegisterAPIV1Routes(r, func(r chi.Router) {
 		r.Get("/status", func(w http.ResponseWriter, r *http.Request) {
-			status := map[string]string{
-				"system":  "Crims Backend",
-				"status":  "healthy",
-				"version": "0.1.0-alpha",
-			}
-			web.RespondJSON(w, http.StatusOK, status)
+			web.RespondJSON(w, http.StatusOK, map[string]string{
+				"system": "Crims Backend",
+				"status": "healthy",
+			})
 		})
 		r.Get("/health", apihttp.NewHealthHandler(pocketBaseClient))
 		apihttp.RegisterMetricsRoutes(r)
+
 		apihttp.RegisterGameRoutes(r, gameService)
 		apihttp.RegisterPlayerRoutes(r, playerService)
 		apihttp.RegisterEventRoutes(r, eventService)
@@ -143,9 +296,11 @@ func main() {
 		apihttp.RegisterTimelineRoutes(r, timelineService)
 		apihttp.RegisterInterrogationRoutes(r, interrogationService)
 		apihttp.RegisterLobbyRoutes(r, lobbyService)
+	})
 
-		// Debug Sentry (Opcional, pots treure-ho si no ho vols aquí)
-		registerSentryDebugRoutes(r)
+	// Debug Sentry
+	r.Get("/api/test-sentry/debug", func(w http.ResponseWriter, r *http.Request) {
+		web.RespondJSON(w, http.StatusOK, map[string]bool{"sentry_active": os.Getenv("SENTRY_DSN") != ""})
 	})
 
 	logger.Info("🚀 Servidor escoltant", "port", cfg.Port, "url", "http://localhost:"+cfg.Port)
@@ -153,46 +308,4 @@ func main() {
 		logger.Error("❌ Error fatal al servidor", "error", err)
 		os.Exit(1)
 	}
-}
-
-// Helpers per mantenir el main net
-
-func loadEnv() {
-	err := godotenv.Load("../.env.local")
-	if err != nil {
-		err = godotenv.Load(".env")
-		if err != nil {
-			log.Printf("⚠️  Warning: No s'ha pogut carregar .env.local o .env: %v", err)
-		} else {
-			log.Println("✅ Carregat .env")
-		}
-	} else {
-		log.Println("✅ Carregat .env.local")
-	}
-}
-
-func initSentry(cfg config.Config) {
-	err := sentry.Init(sentry.ClientOptions{
-		Dsn:              os.Getenv("SENTRY_DSN"),
-		Environment:      cfg.Environment,
-		TracesSampleRate: 0.1,
-	})
-	if err != nil {
-		log.Printf("⚠️  Sentry init failed: %v", err)
-	} else {
-		sentry.ConfigureScope(func(scope *sentry.Scope) {
-			scope.SetTag("app", "crims-backend")
-		})
-		log.Println("✅ Sentry inicialitzat")
-	}
-}
-
-func registerSentryDebugRoutes(r chi.Router) {
-	r.Get("/test-sentry/debug", func(w http.ResponseWriter, r *http.Request) {
-		web.RespondJSON(w, http.StatusOK, map[string]bool{"sentry_active": os.Getenv("SENTRY_DSN") != ""})
-	})
-	r.Get("/test-sentry/error", func(w http.ResponseWriter, r *http.Request) {
-		sentry.CaptureException(fmt.Errorf("Test Error Manual"))
-		web.RespondJSON(w, http.StatusOK, map[string]string{"msg": "Error enviat"})
-	})
 }

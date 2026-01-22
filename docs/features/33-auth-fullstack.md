@@ -22,3 +22,25 @@ Regles i Consideracions
 - Seguretat: no exposem secret keys; token emmagatzemat correctament; protegim rutes amb RBAC si cal.
 - UX: pantalla de login amigable, animacions lleus per a mobile (transicions, loading spinners).
 - Compatibilitat: mantenir compatibilitat amb l’estructura de feature-based i reuse de components.
+
+
+# Feature: Backend User Registration
+
+## Descripció
+Permetre als usuaris registrar-se a l'aplicació creant un compte a PocketBase via el Backend (Proxy).
+
+## Especificació Tècnica
+
+### Endpoint
+`POST /api/auth/register`
+
+### Request Body
+```json
+{
+  "username": "detective_01",
+  "email": "det@crims.com",
+  "password": "securePass123",
+  "passwordConfirm": "securePass123",
+  "name": "Sherlock"
+}
+``` 
