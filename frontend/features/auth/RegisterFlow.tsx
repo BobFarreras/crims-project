@@ -17,7 +17,7 @@ export default function RegisterFlow() {
       if (!res.ok) throw new Error('Register failed')
       // After successful registration, navigate to login
       router.push('/login')
-    } catch (e) {
+  } catch {
       setError('Register failed')
     }
   }

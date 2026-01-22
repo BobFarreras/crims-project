@@ -18,7 +18,7 @@ export default function InterrogationPanel() {
         <div className="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-lg">
           <div className="text-xs font-semibold uppercase tracking-[0.3em] text-amber-600">Current Question</div>
           <h2 className="mt-3 text-2xl font-semibold text-slate-900">Where were you?</h2>
-          <p className="mt-4 text-base leading-7 text-slate-700">"At home. I never left the apartment that night."</p>
+          <p className="mt-4 text-base leading-7 text-slate-700">At home. I never left the apartment that night.</p>
         </div>
 
         <aside className="rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-lg">

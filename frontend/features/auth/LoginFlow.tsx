@@ -26,7 +26,7 @@ export default function LoginFlow() {
       } else {
         throw new Error('Login failed')
       }
-    } catch (e) {
+    } catch {
       setError('Login failed')
     }
   }
