@@ -100,12 +100,17 @@ func (h *AuthHandler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	})
 
 	// Resposta JSON neta (sense token visible)
+	name := authResp.Record.Name
+	if name == "" {
+		name = authResp.Record.Username
+	}
+
 	response := map[string]interface{}{
 		"message": "Login successful",
 		"user": map[string]string{
 			"id":       authResp.Record.ID,
 			"username": authResp.Record.Username,
-			"name":     authResp.Record.Name,
+			"name":     name,
 		},
 	}
 
@@ -136,11 +141,16 @@ func (h *AuthHandler) HandleSession(w http.ResponseWriter, r *http.Request) {
 		MaxAge:   7 * 24 * 60 * 60,
 	})
 
+	name := authResp.Record.Name
+	if name == "" {
+		name = authResp.Record.Username
+	}
+
 	response := map[string]interface{}{
 		"user": map[string]string{
 			"id":       authResp.Record.ID,
 			"username": authResp.Record.Username,
-			"name":     authResp.Record.Name,
+			"name":     name,
 		},
 	}
 

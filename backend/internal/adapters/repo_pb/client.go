@@ -17,6 +17,18 @@ var (
 	ErrUnexpectedStatus = errors.New("unexpected PocketBase status")
 )
 
+type statusError struct {
+	StatusCode int
+}
+
+func (e statusError) Error() string {
+	return fmt.Sprintf("pocketbase status: %d", e.StatusCode)
+}
+
+func (e statusError) Status() int {
+	return e.StatusCode
+}
+
 type Config struct {
 	BaseURL string
 	Timeout time.Duration
@@ -181,4 +193,29 @@ func (c *Client) RefreshAuth(token string) (*ports.AuthResponse, error) {
 	}
 
 	return &authResp, nil
+}
+
+func (c *Client) UpdateUserName(token, userID, name string) error {
+	targetURL := c.baseURL + "/api/collections/users/records/" + userID
+	payload := map[string]string{"username": name}
+	body, _ := json.Marshal(payload)
+
+	req, err := http.NewRequest(http.MethodPatch, targetURL, bytes.NewBuffer(body))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+token)
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		return statusError{StatusCode: resp.StatusCode}
+	}
+
+	return nil
 }

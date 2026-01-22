@@ -47,10 +47,10 @@ func TestAuth_LoginCookieFlags_Production(t *testing.T) {
 	defer server.Close()
 
 	username, email, password := registerUser(t, server.URL)
-	loginResp := loginUser(t, server.URL, email, password)
-	defer loginResp.Body.Close()
+	loginData := loginUserData(t, server.URL, email, password)
+	defer cleanupTestUser(t, baseURL, loginData.Token, loginData.UserID)
 
-	cookieHeader := strings.Join(loginResp.Header.Values("Set-Cookie"), "; ")
+	cookieHeader := strings.Join(loginData.CookieHeader, "; ")
 	if !strings.Contains(cookieHeader, "auth_token=") {
 		t.Fatalf("expected auth_token cookie, got %q", cookieHeader)
 	}
@@ -93,14 +93,14 @@ func TestAuth_SessionEndpoint(t *testing.T) {
 	defer server.Close()
 
 	_, email, password := registerUser(t, server.URL)
-	loginResp := loginUser(t, server.URL, email, password)
-	defer loginResp.Body.Close()
+	loginData := loginUserData(t, server.URL, email, password)
+	defer cleanupTestUser(t, baseURL, loginData.Token, loginData.UserID)
 
 	request, err := http.NewRequest(http.MethodGet, server.URL+"/api/auth/session", nil)
 	if err != nil {
 		t.Fatalf("create session request: %v", err)
 	}
-	for _, cookie := range loginResp.Cookies() {
+	for _, cookie := range loginData.Cookies {
 		request.AddCookie(cookie)
 	}
 
@@ -155,6 +155,18 @@ func TestAuth_SessionEndpoint_MissingCookie(t *testing.T) {
 
 func registerUser(t *testing.T, serverURL string) (string, string, string) {
 	t.Helper()
+
+	if email := os.Getenv("PB_TEST_EMAIL"); email != "" {
+		password := os.Getenv("PB_TEST_PASSWORD")
+		if password == "" {
+			t.Skip("PB_TEST_PASSWORD not set")
+		}
+		username := os.Getenv("PB_TEST_USERNAME")
+		if username == "" {
+			username = "test-user"
+		}
+		return username, email, password
+	}
 
 	username := "test-user-" + time.Now().UTC().Format("20060102150405.000000000")
 	email := username + "@example.com"

@@ -184,3 +184,11 @@ func (d DisabledPocketBaseClient) CreateUser(username, email, password, password
 func (d DisabledPocketBaseClient) AuthWithPassword(identity, password string) (*ports.AuthResponse, error) {
 	return nil, d.Err
 }
+
+func (d DisabledPocketBaseClient) RefreshAuth(token string) (*ports.AuthResponse, error) {
+	return nil, d.Err
+}
+
+func (d DisabledPocketBaseClient) UpdateUserName(token, userID, name string) error {
+	return d.Err
+}

@@ -1,5 +1,15 @@
 -- Reference schema for PocketBase collections
 
+CREATE TABLE users (
+  id TEXT PRIMARY KEY,
+  email TEXT UNIQUE NOT NULL,
+  email_visibility BOOLEAN,
+  verified BOOLEAN,
+  username TEXT NOT NULL,
+  created_at TIMESTAMP,
+  updated_at TIMESTAMP
+);
+
 CREATE TABLE games (
   id TEXT PRIMARY KEY,
   code TEXT UNIQUE NOT NULL,
@@ -13,7 +23,7 @@ CREATE TABLE players (
   id TEXT PRIMARY KEY,
   game_id TEXT NOT NULL,
   user_id TEXT NOT NULL,
-  role TEXT NOT NULL,
+  capabilities JSON,
   status TEXT NOT NULL,
   is_host BOOLEAN NOT NULL,
   created_at TIMESTAMP,

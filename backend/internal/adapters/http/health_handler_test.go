@@ -34,6 +34,10 @@ func (f fakePocketBaseClient) RefreshAuth(token string) (*ports.AuthResponse, er
 	return nil, f.err
 }
 
+func (f fakePocketBaseClient) UpdateUserName(_, _, _ string) error {
+	return f.err
+}
+
 func TestHealthHandler_OK(t *testing.T) {
 	handler := NewHealthHandler(fakePocketBaseClient{})
 

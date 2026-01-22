@@ -19,4 +19,5 @@ type PocketBaseClient interface {
 	// 🔥 NOU MÈTODE
 	AuthWithPassword(identity, password string) (*AuthResponse, error)
 	RefreshAuth(token string) (*AuthResponse, error)
+	UpdateUserName(token, userID, name string) error
 }

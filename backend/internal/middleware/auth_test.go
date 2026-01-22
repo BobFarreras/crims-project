@@ -27,6 +27,10 @@ func (f fakePocketBaseClient) RefreshAuth(_ string) (*ports.AuthResponse, error)
 	return nil, nil
 }
 
+func (f fakePocketBaseClient) UpdateUserName(_, _, _ string) error {
+	return nil
+}
+
 func TestAuthMiddleware_MissingToken(t *testing.T) {
 	request := httptest.NewRequest(http.MethodGet, "/secure", nil)
 	response := httptest.NewRecorder()

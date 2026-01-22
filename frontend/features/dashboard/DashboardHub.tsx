@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import LogoutButton from '@/features/auth/components/LogoutButton'
+import { profileService } from '@/features/profile/services/profile.service'
 
 const modes = [
   { id: 'solo', label: 'Solo', description: 'Un jugador amb totes les capacitats.' },
@@ -24,7 +25,45 @@ const ranking = [
 
 export default function DashboardHub() {
   const router = useRouter()
-  const [playerName, setPlayerName] = useState('Detective')
+  const [playerName, setPlayerName] = useState('')
+  const [isSaving, setIsSaving] = useState(false)
+  const [profileError, setProfileError] = useState('')
+
+  useEffect(() => {
+    let isMounted = true
+
+    profileService
+      .getProfile()
+      .then((data) => {
+        if (isMounted) {
+          setPlayerName(data.user.name || 'Detective')
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setPlayerName('Detective')
+        }
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  const handleSaveProfile = async () => {
+    setIsSaving(true)
+    setProfileError('')
+
+    try {
+      const response = await profileService.updateProfile(playerName.trim())
+      setPlayerName(response.user.name || playerName)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'No hem pogut guardar el perfil.'
+      setProfileError(message)
+    } finally {
+      setIsSaving(false)
+    }
+  }
 
   return (
     <section className="flex w-full flex-col gap-6 p-6">
@@ -60,7 +99,7 @@ export default function DashboardHub() {
 
           <div className="rounded-3xl border border-zinc-200 bg-white/90 p-5 shadow-lg">
             <h2 className="text-sm font-semibold uppercase tracking-[0.3em] text-zinc-500">Casos actius</h2>
-            <div className="mt-4 flex flex-col gap-3">
+          <div className="mt-4 flex flex-col gap-3">
               {activeCases.map((item) => (
                 <article
                   key={item.id}
@@ -99,9 +138,22 @@ export default function DashboardHub() {
                 onChange={(event) => setPlayerName(event.target.value)}
                 className="h-11 rounded-xl border border-zinc-200 bg-white px-3 text-sm text-zinc-900 focus:border-amber-400 focus:outline-none"
               />
+              {profileError ? (
+                <p className="text-xs font-semibold text-red-600" role="alert">
+                  {profileError}
+                </p>
+              ) : null}
+              <button
+                type="button"
+                onClick={handleSaveProfile}
+                disabled={isSaving}
+                className="h-10 rounded-xl bg-amber-500 text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-amber-600 disabled:opacity-60"
+              >
+                {isSaving ? 'Guardant...' : 'Guardar'}
+              </button>
               <div className="flex items-center gap-3 rounded-2xl border border-amber-100 bg-amber-50 px-3 py-2">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-200 text-sm font-bold text-amber-900">
-                  {playerName.charAt(0).toUpperCase()}
+                  {(playerName || 'D').charAt(0).toUpperCase()}
                 </div>
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-widest text-amber-700">Alias</p>

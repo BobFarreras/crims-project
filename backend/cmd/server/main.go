@@ -37,6 +37,9 @@ func (d disabledPocketBaseClient) AuthWithPassword(identity, password string) (*
 func (d disabledPocketBaseClient) RefreshAuth(token string) (*ports.AuthResponse, error) {
 	return nil, d.err
 }
+func (d disabledPocketBaseClient) UpdateUserName(token, userID, name string) error {
+	return d.err
+}
 
 type disabledGameRepository struct{ err error }
 
@@ -286,6 +289,7 @@ func main() {
 	// 🔥 IMPORTANT: REGISTRAR RUTES D'AUTH AQUÍ
 	// Això farà que /api/auth/register funcioni
 	apihttp.RegisterAuthRoutes(r, authHandler)
+	apihttp.RegisterProfileRoutes(r, apihttp.NewProfileHandler(pocketBaseClient))
 
 	// Rutes de l'API v1
 	apihttp.RegisterAPIV1Routes(r, func(r chi.Router) {

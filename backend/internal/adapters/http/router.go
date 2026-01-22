@@ -25,6 +25,13 @@ func RegisterAuthRoutes(r chi.Router, handler *AuthHandler) {
 	})
 }
 
+func RegisterProfileRoutes(r chi.Router, handler *ProfileHandler) {
+	r.Route("/api/profile", func(r chi.Router) {
+		r.Get("/", handler.HandleGetProfile)
+		r.Put("/", handler.HandleUpdateProfile)
+	})
+}
+
 func RegisterMetricsRoutes(r chi.Router) {
 	r.Get("/metrics", NewMetricsHandler())
 }
