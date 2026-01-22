@@ -1,0 +1,203 @@
+{
+  "collections": [
+    {
+      "id": "gms111111111111",
+      "name": "games",
+      "type": "base",
+      "system": false,
+      "schema": [
+        {"id": "gmscode11111111", "name": "code", "type": "text", "required": true, "options": {"min": 1, "max": 50, "pattern": ""}},
+        {"id": "gmsstate1111111", "name": "state", "type": "text", "required": true, "options": {"min": 1, "max": 50, "pattern": ""}},
+        {"id": "gmsseed11111111", "name": "seed", "type": "text", "required": true, "options": {"min": 1, "max": 200, "pattern": ""}}
+      ],
+      "indexes": [],
+      "listRule": null,
+      "viewRule": null,
+      "createRule": null,
+      "updateRule": null,
+      "deleteRule": null,
+      "options": {}
+    },
+    {
+      "id": "ply111111111111",
+      "name": "players",
+      "type": "base",
+      "system": false,
+      "schema": [
+        {"id": "plygame1111111", "name": "gameId", "type": "relation", "required": true, "options": {"collectionId": "gms111111111111", "cascadeDelete": true, "maxSelect": 1}},
+        {"id": "plyuser1111111", "name": "userId", "type": "text", "required": true, "options": {"min": 1, "max": 100, "pattern": ""}},
+        {"id": "plyrole1111111", "name": "role", "type": "text", "required": true, "options": {"min": 1, "max": 30, "pattern": ""}},
+        {"id": "plystatus11111", "name": "status", "type": "text", "required": true, "options": {"min": 1, "max": 30, "pattern": ""}},
+        {"id": "plyhost1111111", "name": "isHost", "type": "bool", "required": true, "options": {}}
+      ],
+      "indexes": [],
+      "listRule": null,
+      "viewRule": null,
+      "createRule": null,
+      "updateRule": null,
+      "deleteRule": null,
+      "options": {}
+    },
+    {
+      "id": "evt111111111111",
+      "name": "events",
+      "type": "base",
+      "system": false,
+      "schema": [
+        {"id": "evtgame1111111", "name": "gameId", "type": "relation", "required": true, "options": {"collectionId": "gms111111111111", "cascadeDelete": true, "maxSelect": 1}},
+        {"id": "evttime1111111", "name": "timestamp", "type": "text", "required": true, "options": {"min": 1, "max": 50, "pattern": ""}},
+        {"id": "evtloc11111111", "name": "locationId", "type": "text", "required": true, "options": {"min": 1, "max": 100, "pattern": ""}},
+        {"id": "evtpart111111", "name": "participants", "type": "relation", "required": false, "options": {"collectionId": "prs111111111111", "cascadeDelete": false, "maxSelect": 999}}
+      ],
+      "indexes": [],
+      "listRule": null,
+      "viewRule": null,
+      "createRule": null,
+      "updateRule": null,
+      "deleteRule": null,
+      "options": {}
+    },
+    {
+      "id": "clu111111111111",
+      "name": "clues",
+      "type": "base",
+      "system": false,
+      "schema": [
+        {"id": "clugame1111111", "name": "gameId", "type": "relation", "required": true, "options": {"collectionId": "gms111111111111", "cascadeDelete": true, "maxSelect": 1}},
+        {"id": "clutype1111111", "name": "type", "type": "text", "required": true, "options": {"min": 1, "max": 50, "pattern": ""}},
+        {"id": "clustate111111", "name": "state", "type": "text", "required": true, "options": {"min": 1, "max": 50, "pattern": ""}},
+        {"id": "clurel11111111", "name": "reliability", "type": "number", "required": true, "options": {"min": 0, "max": 100, "noDecimal": true}},
+        {"id": "clufact1111111", "name": "facts", "type": "json", "required": false, "options": {"maxSize": 200000}}
+      ],
+      "indexes": [],
+      "listRule": null,
+      "viewRule": null,
+      "createRule": null,
+      "updateRule": null,
+      "deleteRule": null,
+      "options": {}
+    },
+    {
+      "id": "prs111111111111",
+      "name": "persons",
+      "type": "base",
+      "system": false,
+      "schema": [
+        {"id": "prsgame1111111", "name": "gameId", "type": "relation", "required": true, "options": {"collectionId": "gms111111111111", "cascadeDelete": true, "maxSelect": 1}},
+        {"id": "prsname1111111", "name": "name", "type": "text", "required": true, "options": {"min": 1, "max": 100, "pattern": ""}},
+        {"id": "prsos111111111", "name": "officialStory", "type": "text", "required": true, "options": {"min": 1, "max": 5000, "pattern": ""}},
+        {"id": "prsts111111111", "name": "truthStory", "type": "text", "required": true, "options": {"min": 1, "max": 5000, "pattern": ""}},
+        {"id": "prsstress11111", "name": "stress", "type": "number", "required": true, "options": {"min": 0, "max": 100, "noDecimal": true}},
+        {"id": "prscred111111", "name": "credibility", "type": "number", "required": true, "options": {"min": 0, "max": 100, "noDecimal": true}}
+      ],
+      "indexes": [],
+      "listRule": null,
+      "viewRule": null,
+      "createRule": null,
+      "updateRule": null,
+      "deleteRule": null,
+      "options": {}
+    },
+    {
+      "id": "hyp111111111111",
+      "name": "hypotheses",
+      "type": "base",
+      "system": false,
+      "schema": [
+        {"id": "hypgame1111111", "name": "gameId", "type": "relation", "required": true, "options": {"collectionId": "gms111111111111", "cascadeDelete": true, "maxSelect": 1}},
+        {"id": "hyptitle111111", "name": "title", "type": "text", "required": true, "options": {"min": 1, "max": 200, "pattern": ""}},
+        {"id": "hypstr1111111", "name": "strengthScore", "type": "number", "required": true, "options": {"min": 0, "max": 100, "noDecimal": true}},
+        {"id": "hypstatus11111", "name": "status", "type": "text", "required": true, "options": {"min": 1, "max": 50, "pattern": ""}},
+        {"id": "hypnodes111111", "name": "nodeIds", "type": "json", "required": false, "options": {"maxSize": 200000}}
+      ],
+      "indexes": [],
+      "listRule": null,
+      "viewRule": null,
+      "createRule": null,
+      "updateRule": null,
+      "deleteRule": null,
+      "options": {}
+    },
+    {
+      "id": "acc111111111111",
+      "name": "accusations",
+      "type": "base",
+      "system": false,
+      "schema": [
+        {"id": "accgame1111111", "name": "gameId", "type": "relation", "required": true, "options": {"collectionId": "gms111111111111", "cascadeDelete": true, "maxSelect": 1}},
+        {"id": "accplayer11111", "name": "playerId", "type": "relation", "required": true, "options": {"collectionId": "ply111111111111", "cascadeDelete": false, "maxSelect": 1}},
+        {"id": "accsus1111111", "name": "suspectId", "type": "relation", "required": true, "options": {"collectionId": "prs111111111111", "cascadeDelete": false, "maxSelect": 1}},
+        {"id": "accmot1111111", "name": "motiveId", "type": "text", "required": true, "options": {"min": 1, "max": 100, "pattern": ""}},
+        {"id": "accevi1111111", "name": "evidenceId", "type": "relation", "required": true, "options": {"collectionId": "clu111111111111", "cascadeDelete": false, "maxSelect": 1}},
+        {"id": "accver1111111", "name": "verdict", "type": "text", "required": false, "options": {"min": 0, "max": 50, "pattern": ""}}
+      ],
+      "indexes": [],
+      "listRule": null,
+      "viewRule": null,
+      "createRule": null,
+      "updateRule": null,
+      "deleteRule": null,
+      "options": {}
+    },
+    {
+      "id": "frn111111111111",
+      "name": "forensics",
+      "type": "base",
+      "system": false,
+      "schema": [
+        {"id": "frngame1111111", "name": "gameId", "type": "relation", "required": true, "options": {"collectionId": "gms111111111111", "cascadeDelete": true, "maxSelect": 1}},
+        {"id": "frnclue1111111", "name": "clueId", "type": "relation", "required": true, "options": {"collectionId": "clu111111111111", "cascadeDelete": false, "maxSelect": 1}},
+        {"id": "frnres1111111", "name": "result", "type": "text", "required": true, "options": {"min": 1, "max": 200, "pattern": ""}},
+        {"id": "frnconf111111", "name": "confidence", "type": "number", "required": true, "options": {"min": 0, "max": 100, "noDecimal": true}},
+        {"id": "frnstat111111", "name": "status", "type": "text", "required": true, "options": {"min": 1, "max": 20, "pattern": ""}}
+      ],
+      "indexes": [],
+      "listRule": null,
+      "viewRule": null,
+      "createRule": null,
+      "updateRule": null,
+      "deleteRule": null,
+      "options": {}
+    },
+    {
+      "id": "tml111111111111",
+      "name": "timeline",
+      "type": "base",
+      "system": false,
+      "schema": [
+        {"id": "tmlgame1111111", "name": "gameId", "type": "relation", "required": true, "options": {"collectionId": "gms111111111111", "cascadeDelete": true, "maxSelect": 1}},
+        {"id": "tmltime1111111", "name": "timestamp", "type": "text", "required": true, "options": {"min": 1, "max": 50, "pattern": ""}},
+        {"id": "tmltitle111111", "name": "title", "type": "text", "required": true, "options": {"min": 1, "max": 200, "pattern": ""}},
+        {"id": "tmldesc1111111", "name": "description", "type": "text", "required": true, "options": {"min": 1, "max": 5000, "pattern": ""}},
+        {"id": "tmlevt1111111", "name": "eventId", "type": "relation", "required": false, "options": {"collectionId": "evt111111111111", "cascadeDelete": false, "maxSelect": 1}}
+      ],
+      "indexes": [],
+      "listRule": null,
+      "viewRule": null,
+      "createRule": null,
+      "updateRule": null,
+      "deleteRule": null,
+      "options": {}
+    },
+    {
+      "id": "int111111111111",
+      "name": "interrogations",
+      "type": "base",
+      "system": false,
+      "schema": [
+        {"id": "intgame1111111", "name": "gameId", "type": "relation", "required": true, "options": {"collectionId": "gms111111111111", "cascadeDelete": true, "maxSelect": 1}},
+        {"id": "intpers1111111", "name": "personId", "type": "relation", "required": true, "options": {"collectionId": "prs111111111111", "cascadeDelete": false, "maxSelect": 1}},
+        {"id": "intquest11111", "name": "question", "type": "text", "required": true, "options": {"min": 1, "max": 1000, "pattern": ""}},
+        {"id": "intansw111111", "name": "answer", "type": "text", "required": true, "options": {"min": 1, "max": 5000, "pattern": ""}},
+        {"id": "inttone111111", "name": "tone", "type": "text", "required": true, "options": {"min": 1, "max": 50, "pattern": ""}}
+      ],
+      "indexes": [],
+      "listRule": null,
+      "viewRule": null,
+      "createRule": null,
+      "updateRule": null,
+      "deleteRule": null,
+      "options": {}
+    }
+  ]
+}
