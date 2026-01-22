@@ -13,7 +13,8 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
-    "baseUrl": ".",  // <--- AQUESTA és la línia clau que et faltava
+    "baseUrl": ".",
+    "types": ["vitest/globals"],  // <--- AFEGEIX AQUESTA LÍNIA
     "plugins": [
       {
         "name": "next"

@@ -6,7 +6,8 @@ describe('InterrogationPanel', () => {
     render(<InterrogationPanel />)
 
     expect(screen.getByRole('heading', { name: /interrogation/i })).toBeInTheDocument()
-    expect(screen.getByText(/where were you/i)).toBeInTheDocument()
+    // CANVI CLAU: Fem servir getByRole 'heading' en comptes de getByText
+    expect(screen.getByRole('heading', { name: /where were you/i })).toBeInTheDocument()
   })
 
   it('renders history entries', () => {
