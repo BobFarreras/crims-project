@@ -21,6 +21,7 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "tailwind-merge": "^3.4.0"
+
   },
   "devDependencies": {
     "@sentry/wizard": "^6.11.0",
