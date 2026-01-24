@@ -290,6 +290,7 @@ func main() {
 	// Això farà que /api/auth/register funcioni
 	apihttp.RegisterAuthRoutes(r, authHandler)
 	apihttp.RegisterProfileRoutes(r, apihttp.NewProfileHandler(pocketBaseClient))
+	apihttp.RegisterLobbyRoutes(r, lobbyService, pocketBaseClient)
 
 	// Rutes de l'API v1
 	apihttp.RegisterAPIV1Routes(r, func(r chi.Router) {
@@ -312,7 +313,6 @@ func main() {
 		apihttp.RegisterForensicRoutes(r, forensicService)
 		apihttp.RegisterTimelineRoutes(r, timelineService)
 		apihttp.RegisterInterrogationRoutes(r, interrogationService)
-		apihttp.RegisterLobbyRoutes(r, lobbyService)
 	})
 
 	// Debug Sentry

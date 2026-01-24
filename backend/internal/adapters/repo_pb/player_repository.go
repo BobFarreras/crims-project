@@ -41,6 +41,9 @@ func (p *PlayerRepository) CreatePlayer(ctx context.Context, input PlayerRecordI
 		return PlayerRecord{}, err
 	}
 	request.Header.Set("Content-Type", "application/json")
+	if token := ports.AuthTokenFromContext(ctx); token != "" {
+		request.Header.Set("Authorization", "Bearer "+token)
+	}
 
 	response, err := p.client.httpClient.Do(request)
 	if err != nil {

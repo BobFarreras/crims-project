@@ -2,7 +2,10 @@ package services
 
 import (
 	"context"
+	"crypto/rand"
 	"errors"
+	"math/big"
+	"strings"
 
 	"github.com/digitaistudios/crims-backend/internal/ports"
 )
@@ -37,6 +40,45 @@ func (s *LobbyService) JoinGame(ctx context.Context, gameCode, userID string, ca
 		Status:       "ONLINE",
 		IsHost:       false,
 	})
+}
+
+func (s *LobbyService) CreateLobby(ctx context.Context, userID string, capabilities []string) (ports.LobbyState, error) {
+	if userID == "" {
+		return ports.LobbyState{}, ErrInvalidLobbyInput
+	}
+
+	code := generateLobbyCode()
+	game, err := s.gameRepo.CreateGame(ctx, ports.GameRecordInput{
+		Code:  code,
+		State: "LOBBY",
+		Seed:  "seed",
+	})
+	if err != nil {
+		return ports.LobbyState{}, err
+	}
+
+	player, err := s.playerRepo.CreatePlayer(ctx, ports.PlayerRecordInput{
+		GameID:       game.ID,
+		UserID:       userID,
+		Capabilities: capabilities,
+		Status:       "ONLINE",
+		IsHost:       true,
+	})
+	if err != nil {
+		return ports.LobbyState{}, err
+	}
+
+	return ports.LobbyState{Game: game, Player: player}, nil
+}
+
+func generateLobbyCode() string {
+	const letters = "ABCDEFGHJKLMNPQRSTUVWXYZ"
+	var builder strings.Builder
+	for i := 0; i < 4; i++ {
+		n, _ := rand.Int(rand.Reader, big.NewInt(int64(len(letters))))
+		builder.WriteByte(letters[n.Int64()])
+	}
+	return builder.String()
 }
 
 func (s *LobbyService) ListPlayers(ctx context.Context, gameID string) ([]ports.PlayerRecord, error) {

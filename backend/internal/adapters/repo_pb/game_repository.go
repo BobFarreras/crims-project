@@ -42,6 +42,9 @@ func (g *GameRepository) CreateGame(ctx context.Context, input GameRecordInput) 
 		return GameRecord{}, err
 	}
 	request.Header.Set("Content-Type", "application/json")
+	if token := ports.AuthTokenFromContext(ctx); token != "" {
+		request.Header.Set("Authorization", "Bearer "+token)
+	}
 
 	response, err := g.client.httpClient.Do(request)
 	if err != nil {

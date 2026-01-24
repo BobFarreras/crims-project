@@ -88,8 +88,9 @@ func RegisterInterrogationRoutes(r chi.Router, service ports.InterrogationServic
 	r.Get("/api/games/{id}/interrogations", withPathParam(idParamKey, "id", NewListInterrogationsByGameHandler(service)))
 }
 
-func RegisterLobbyRoutes(r chi.Router, service ports.LobbyService) {
-	r.Post("/api/lobby/join", NewLobbyJoinHandler(service))
+func RegisterLobbyRoutes(r chi.Router, service ports.LobbyService, pbClient ports.PocketBaseClient) {
+	r.Post("/api/lobby/create", NewLobbyCreateHandler(service, pbClient))
+	r.Post("/api/lobby/join", NewLobbyJoinHandler(service, pbClient))
 }
 
 func withPathParam(key contextKey, name string, next http.HandlerFunc) http.HandlerFunc {
